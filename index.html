@@ -4,73 +4,171 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Faithful Auto Care</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Poppins Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="font-sans">
 
-  <!-- HERO SECTION -->
-  <section class="relative h-screen w-full bg-cover bg-center"
-    style="background-image: url('utilities/Images/LandingPage1.png'); background-size: cover; background-position: center; ">
+<body class="font-poppins">
 
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/20"></div>
-
-    <!-- NAVBAR -->
-    <nav class="relative z-10 flex items-center justify-between px-10 py-6 text-white">
-      
-      <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <img src="utilities/Images/logo.png" alt="Faithful Auto Care Logo" class="h-10 w-auto" />
-        <span class="text-lg font-semibold uppercase tracking-wide">
-          Faithful Auto Care
-        </span>
-      </div>
-
-      <!-- Nav Links -->
-      <ul class="hidden md:flex items-center gap-10 text-sm font-medium">
-        <li class="hover:text-blue-400 cursor-pointer">Home</li>
-        <li class="hover:text-blue-400 cursor-pointer">About Us</li>
-        <li class="hover:text-blue-400 cursor-pointer">Services</li>
-        <li class="hover:text-blue-400 cursor-pointer">Process</li>
-        <li class="hover:text-blue-400 cursor-pointer">Price</li>
-      </ul>
-
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-4">
-        <button class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium">
-          💬 Chat us
-        </button>
-        <button class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium">
-          📞 Call
-        </button>
-      </div>
-    </nav>
-
-    <!-- HERO CONTENT -->
-    <div class="relative z-10 flex h-full items-center px-10">
-      <div class="max-w-2xl text-white">
+  <!-- NAVBAR -->
+  <nav class="fixed top-0 left-0 z-50 w-full">
+    <div class="mx-auto mt-6 max-w-7xl px-6">
+      <div class="flex h-14 items-center justify-between rounded-xl bg-[#D6EAF84D] backdrop-blur-md px-6">
         
-        <h1 class="text-5xl md:text-6xl font-extrabold leading-tight">
-          Professional shine.<br />
-          Exceptional care.
-        </h1>
+        <!-- Logo -->
+        <div class="flex items-center gap-3 text-white">
+          <img src="utilities/Images/logo.png" alt="Faithful Auto Care Logo" class="h-10 w-auto" />
+          <span class="text-lg text-blue-900 font-semibold uppercase tracking-wide">
+            Faithful Auto Care
+          </span>
+        </div>
 
-        <p class="mt-6 text-base md:text-lg text-gray-200 leading-relaxed">
-          Where every wash restores that brand-new feeling, leaving your car
-          spotless, refreshed, and ready to own the road with confidence.
-        </p>
+        <!-- Nav Links -->
+        <ul class="hidden md:flex items-center gap-10 text-sm font-medium text-white">
+          <li class="cursor-pointer hover:text-blue-400">Home</li>
+          <li class="cursor-pointer hover:text-blue-400">About Us</li>
+          <li class="cursor-pointer hover:text-blue-400">Services</li>
+          <li class="cursor-pointer hover:text-blue-400">Process</li>
+          <li class="cursor-pointer hover:text-blue-400">Price</li>
+        </ul>
 
-        <button class="mt-8 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-semibold">
-          Book Now
-        </button>
+        <!-- Actions -->
+        <div class="flex items-center gap-3">
+          <button class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+            <i class="fa-regular fa-comment"></i> Chat us
+          </button>
+          <button class="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600">
+             <i class="fa-solid fa-phone"></i> Call
+          </button>
+        </div>
+
       </div>
     </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section
+    class="relative flex h-screen w-full items-center bg-cover bg-center"
+    style="background-image: url('utilities/Images/LandingPage1.png');"
+  >
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/30"></div>
+
+    <!-- Hero Content -->
+    <!-- HERO CONTENT -->
+<div
+  class="absolute z-10 flex flex-col text-white"
+  style="
+    width: 600px;
+    height: 344px;
+    top: 144px;
+    left: 33px;
+    gap: 66px;
+  "
+>
+  <h1 class="text-[60px] font-bold leading-[100%]">
+  <span class="block">
+    Professional shine.
+  </span>
+  <span class="block mt-3">
+    Exceptional care.
+  </span>
+</h1>
+
+  <p
+  class="text-[15px] font-bold leading-relaxed text-gray-200"
+  style="width: 375px; height: 76px;"
+>
+  Where every wash restores that brand, new<br />
+  feeling, leaving your car spotless, refreshed,<br />
+  ready to own the road with confidence.
+</p>
+
+  <button class="w-fit rounded-lg bg-blue-600 px-6 py-3 font-semibold hover:bg-blue-700">
+    Book Now
+  </button>
+</div>
 
   </section>
 
-  <section>
-    
-  </section>
+  <!-- FEATURES SECTION -->
+<section class="py-16 bg-gray-50">
+  <div class="mx-auto max-w-7xl px-6">
+    <div
+      class="flex flex-wrap justify-between gap-y-8"
+    >
+      <!-- Card 1 -->
+      <div class="flex h-[151px] w-[220px] flex-col items-center justify-center gap-3 rounded-xl bg-[#4FA3E3] p-4 text-center text-white">
+        <span class="text-2xl"><i class="fa-solid fa-trophy"></i></span>
+        <h3 class="text-[15px] font-bold leading-[100%]">
+          Quality Focused
+        </h3>
+        <p class="text-[13px] leading-[120%] opacity-90">
+          premium products, and<br />
+          a spotless finish every<br />
+          single time.
+        </p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="flex h-[151px] w-[220px] flex-col items-center justify-center gap-3 rounded-xl bg-[#4FA3E3] p-4 text-center text-white">
+        <span class="text-2xl"><i class="fa-solid fa-stopwatch"></i></span>
+        <h3 class="text-[15px] font-bold leading-[100%]">
+          Rapid & Reliable
+        </h3>
+        <p class="text-[13px] leading-[120%] opacity-90">
+          fast, efficient service<br />
+          without compromise on<br />
+          quality
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="flex h-[151px] w-[220px] flex-col items-center justify-center gap-3 rounded-xl bg-[#4FA3E3] p-4 text-center text-white">
+        <span class="text-2xl">🤝</span>
+        <h3 class="text-[15px] font-bold leading-[100%]">
+          Customer Experience
+        </h3>
+        <p class="text-[13px] leading-[120%] opacity-90">
+          refreshing care that<br />
+          makes every visit worth<br />
+          it.
+        </p>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="flex h-[151px] w-[220px] flex-col items-center justify-center gap-3 rounded-xl bg-[#4FA3E3] p-4 text-center text-white">
+        <span class="text-2xl">♻️</span>
+        <h3 class="text-[15px] font-bold leading-[100%]">
+          Eco-Conscious
+        </h3>
+        <p class="text-[13px] leading-[120%] opacity-90">
+          plant-based soaps and<br />
+          80% water recycling
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
 </body>
 </html>
