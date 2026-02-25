@@ -1,7 +1,9 @@
 import { Car } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export const AboutSection = () => {
+  const navigate = useNavigate();
   return (
     <section id="about" className="py-16 bg-gray-50">
       <div className="container mx-auto px-6 md:px-12 lg:px-24">
@@ -36,7 +38,10 @@ export const AboutSection = () => {
               eco-friendly techniques to ensure every car gets thorough care,
               lasting shine, and a smooth, hassle-free experience.
             </p>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-8 rounded-lg">
+            <Button
+              onClick={() => navigate('/book-now')}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-8 rounded-lg"
+            >
               Book Now
             </Button>
           </div>

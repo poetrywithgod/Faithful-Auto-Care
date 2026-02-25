@@ -1,7 +1,10 @@
 import { MessageCircle, Phone } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export const HeroSection = () => {
+  const navigate = useNavigate();
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -104,7 +107,10 @@ export const HeroSection = () => {
               spotless, refreshed, ready to own the road with confidence.
             </p>
 
-            <Button className="rounded-lg bg-blue-600 px-8 py-6 text-base font-semibold hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+            <Button
+              onClick={() => navigate('/book-now')}
+              className="rounded-lg bg-blue-600 px-8 py-6 text-base font-semibold hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+            >
               Book Now
             </Button>
           </div>

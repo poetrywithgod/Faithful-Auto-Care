@@ -1,3 +1,4 @@
+import { Routes, Route } from "react-router-dom";
 import { HeroSection } from "./sections/HeroSection";
 import { FeaturesSection } from "./sections/FeaturesSection";
 import { AboutSection } from "./sections/AboutSection";
@@ -9,8 +10,9 @@ import { PricingSection } from "./sections/PricingSection";
 import { ReviewsSection } from "./sections/ReviewsSection";
 import { FAQSection } from "./sections/FAQSection";
 import { FooterSection } from "./sections/FooterSection";
+import { BookingPage } from "./pages/BookingPage";
 
-function App() {
+function HomePage() {
   return (
     <div className="min-h-screen">
       <HeroSection />
@@ -25,6 +27,15 @@ function App() {
       <FAQSection />
       <FooterSection />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/book-now" element={<BookingPage />} />
+    </Routes>
   );
 }
 
