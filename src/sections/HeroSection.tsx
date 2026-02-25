@@ -2,6 +2,20 @@ import { MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const HeroSection = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <>
       <nav className="fixed top-0 left-0 z-50 w-full">
@@ -19,11 +33,36 @@ export const HeroSection = () => {
             </div>
 
             <ul className="hidden md:flex items-center gap-10 text-sm font-medium text-gray-700">
-              <li className="cursor-pointer hover:text-blue-600 transition">Home</li>
-              <li className="cursor-pointer hover:text-blue-600 transition">About Us</li>
-              <li className="cursor-pointer hover:text-blue-600 transition">Services</li>
-              <li className="cursor-pointer hover:text-blue-600 transition">Process</li>
-              <li className="cursor-pointer hover:text-blue-600 transition">Price</li>
+              <li
+                className="cursor-pointer hover:text-blue-600 transition"
+                onClick={() => scrollToSection("hero")}
+              >
+                Home
+              </li>
+              <li
+                className="cursor-pointer hover:text-blue-600 transition"
+                onClick={() => scrollToSection("about")}
+              >
+                About Us
+              </li>
+              <li
+                className="cursor-pointer hover:text-blue-600 transition"
+                onClick={() => scrollToSection("services")}
+              >
+                Services
+              </li>
+              <li
+                className="cursor-pointer hover:text-blue-600 transition"
+                onClick={() => scrollToSection("process")}
+              >
+                Process
+              </li>
+              <li
+                className="cursor-pointer hover:text-blue-600 transition"
+                onClick={() => scrollToSection("pricing")}
+              >
+                Price
+              </li>
             </ul>
 
             <div className="flex items-center gap-3">
@@ -39,6 +78,7 @@ export const HeroSection = () => {
       </nav>
 
       <section
+        id="hero"
         className="relative flex h-screen w-full items-center bg-cover bg-center"
         style={{ backgroundImage: "url('/LandingPage1.png')" }}
       >
