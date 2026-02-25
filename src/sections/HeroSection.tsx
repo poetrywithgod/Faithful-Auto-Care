@@ -79,24 +79,32 @@ export const HeroSection = () => {
 
       <section
         id="hero"
-        className="relative flex h-screen w-full items-center bg-cover bg-center"
-        style={{ backgroundImage: "url('/LandingPage1.png')" }}
+        className="relative flex min-h-screen w-full items-center overflow-hidden"
       >
-        <div className="absolute inset-0 bg-black/30"></div>
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/LandingPage1.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center'
+          }}
+        />
 
-        <div className="container mx-auto px-6 relative z-10">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent"></div>
+
+        <div className="container mx-auto px-6 relative z-10 py-32">
           <div className="max-w-2xl text-white">
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 drop-shadow-lg">
               <span className="block">Professional shine.</span>
               <span className="block mt-3">Exceptional care.</span>
             </h1>
 
-            <p className="text-base md:text-lg font-medium leading-relaxed text-gray-200 mb-8 max-w-lg">
+            <p className="text-base md:text-lg lg:text-xl font-medium leading-relaxed text-white/95 mb-8 max-w-lg drop-shadow-md">
               Where every wash restores that brand new feeling, leaving your car
               spotless, refreshed, ready to own the road with confidence.
             </p>
 
-            <Button className="rounded-lg bg-blue-600 px-8 py-6 text-base font-semibold hover:bg-blue-700">
+            <Button className="rounded-lg bg-blue-600 px-8 py-6 text-base font-semibold hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
               Book Now
             </Button>
           </div>
