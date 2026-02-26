@@ -180,19 +180,19 @@ export const HeroSection = () => {
 
         <div className="container mx-auto px-6 relative z-10 py-32">
           <div className="max-w-2xl text-white">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 drop-shadow-lg">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 drop-shadow-lg opacity-0 animate-slideInLeft">
               <span className="block">Professional shine.</span>
               <span className="block mt-3">Exceptional care.</span>
             </h1>
 
-            <p className="text-base md:text-lg lg:text-xl font-medium leading-relaxed text-white/95 mb-8 max-w-lg drop-shadow-md">
+            <p className="text-base md:text-lg lg:text-xl font-medium leading-relaxed text-white/95 mb-8 max-w-lg drop-shadow-md opacity-0 animate-slideInLeft animation-delay-200">
               Where every wash restores that brand new feeling, leaving your car
               spotless, refreshed, ready to own the road with confidence.
             </p>
 
             <Button
               onClick={() => navigate('/book-now')}
-              className="rounded-lg bg-blue-600 px-8 py-6 text-base font-semibold hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+              className="rounded-lg bg-blue-600 px-8 py-6 text-base font-semibold hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 opacity-0 animate-slideInLeft animation-delay-400"
             >
               Book Now
             </Button>

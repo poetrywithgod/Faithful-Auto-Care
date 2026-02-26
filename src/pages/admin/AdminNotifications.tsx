@@ -118,15 +118,15 @@ export function AdminNotifications() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Email Notifications</h2>
-          <p className="text-gray-600 mt-1">Manage who receives booking notification emails</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">Email Notifications</h2>
+          <p className="text-sm md:text-base text-gray-600 mt-1">Manage who receives booking notification emails</p>
         </div>
         <Button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-[#1E90FF] hover:bg-[#1873CC]"
+          className="bg-[#1E90FF] hover:bg-[#1873CC] w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Admin
@@ -146,9 +146,9 @@ export function AdminNotifications() {
       )}
 
       {showAddForm && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 md:p-6 space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Add New Admin</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Name
@@ -172,10 +172,10 @@ export function AdminNotifications() {
               />
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button
               onClick={handleAddAdmin}
-              className="bg-[#1E90FF] hover:bg-[#1873CC]"
+              className="bg-[#1E90FF] hover:bg-[#1873CC] w-full sm:w-auto"
             >
               Add Admin
             </Button>
@@ -186,6 +186,7 @@ export function AdminNotifications() {
                 setError('');
               }}
               variant="outline"
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>

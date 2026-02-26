@@ -37,7 +37,7 @@ export const FAQSection = () => {
   return (
     <section className="py-16 sm:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
-        <div className="text-center mb-8 sm:mb-12">
+        <div className="text-center mb-8 sm:mb-12 opacity-0 animate-slideUp">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-3 sm:mb-4 px-4">
             Frequently Asked Questions
           </h2>

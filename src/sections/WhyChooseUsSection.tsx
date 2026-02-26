@@ -28,7 +28,7 @@ export const WhyChooseUsSection = () => {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-6 md:px-12 lg:px-24">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 opacity-0 animate-slideUp">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Why Choose Us</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Experience the difference with our commitment to excellence
@@ -36,7 +36,7 @@ export const WhyChooseUsSection = () => {
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-12">
-          <div className="relative w-full md:w-1/2 flex justify-center">
+          <div className="relative w-full md:w-1/2 flex justify-center opacity-0 animate-slideInLeft animation-delay-200">
             <div className="absolute rounded-xl z-0 w-[280px] sm:w-[391px] h-[280px] sm:h-[383px] bg-[#A8D4F5] rotate-[8deg] transform"></div>
 
             <img

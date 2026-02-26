@@ -29,7 +29,7 @@ export const StatisticsSection = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {stats.map((stat, index) => (
-            <div key={index} className="text-center">
+            <div key={index} className={`text-center opacity-0 animate-scaleIn animation-delay-${(index + 1) * 200}`}>
               <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <stat.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
               </div>

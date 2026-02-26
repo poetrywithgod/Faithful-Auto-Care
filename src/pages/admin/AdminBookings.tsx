@@ -57,34 +57,38 @@ export const AdminBookings = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-900">Bookings</h1>
-        <p className="text-gray-600">View, Edit & Manage all Appointments</p>
+      <div className="space-y-4 md:space-y-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Bookings</h1>
+          <p className="text-sm md:text-base text-gray-600">View, Edit & Manage all Appointments</p>
+        </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
-              placeholder="Search by name or email address"
-              className="pl-10"
+              placeholder="Search by name or email"
+              className="pl-10 w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <select
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option>All Status</option>
-            <option>Confirmed</option>
-            <option>Pending</option>
-            <option>Cancelled</option>
-          </select>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-2">
+            <select
+              className="flex-1 sm:flex-initial rounded-lg border border-gray-300 px-3 md:px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option>All Status</option>
+              <option>Confirmed</option>
+              <option>Pending</option>
+              <option>Cancelled</option>
+            </select>
+            <Button variant="outline" size="sm" className="sm:inline-flex">
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         <Card className="overflow-hidden">
