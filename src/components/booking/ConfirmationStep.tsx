@@ -14,7 +14,7 @@ interface ConfirmationStepProps {
   bookingId: string;
 }
 
-export function ConfirmationStep({ bookingData }: ConfirmationStepProps) {
+export function ConfirmationStep({ bookingData, bookingId }: ConfirmationStepProps) {
   const navigate = useNavigate();
 
   const formatDate = (dateString: string) => {
@@ -36,6 +36,12 @@ export function ConfirmationStep({ bookingData }: ConfirmationStepProps) {
         <div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Booking Confirmed</h2>
           <p className="text-gray-600">Your appointment is scheduled we will see your soon</p>
+        </div>
+
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-300 rounded-xl p-6 mt-4">
+          <p className="text-sm text-gray-600 mb-2">Your Booking Code</p>
+          <p className="text-4xl font-bold text-[#1E90FF] tracking-wider">{bookingId}</p>
+          <p className="text-xs text-gray-500 mt-2">Please save this code for your records</p>
         </div>
       </div>
 
@@ -104,7 +110,7 @@ export function ConfirmationStep({ bookingData }: ConfirmationStepProps) {
           Book Another Appointment
         </Button>
         <Button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/view-bookings')}
           variant="outline"
           className="flex-1 h-12 text-gray-700 border-gray-300"
         >

@@ -25,17 +25,17 @@ export const FeaturesSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <section className="py-12 sm:py-16 bg-gray-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="flex flex-col items-center justify-center gap-3 rounded-xl bg-[#4FA3E3] p-6 text-center text-white min-h-[180px] hover:bg-[#3d8cc9] transition-colors"
+              className="flex flex-col items-center justify-center gap-2 sm:gap-3 rounded-xl bg-[#4FA3E3] p-5 sm:p-6 text-center text-white min-h-[160px] sm:min-h-[180px] hover:bg-[#3d8cc9] transition-colors"
             >
-              <feature.icon className="w-8 h-8" />
-              <h3 className="text-base font-bold">{feature.title}</h3>
-              <p className="text-sm opacity-90">{feature.description}</p>
+              <feature.icon className="w-7 h-7 sm:w-8 sm:h-8" />
+              <h3 className="text-sm sm:text-base font-bold">{feature.title}</h3>
+              <p className="text-xs sm:text-sm opacity-90">{feature.description}</p>
             </div>
           ))}
         </div>

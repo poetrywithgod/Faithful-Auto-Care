@@ -11,6 +11,7 @@ import { ReviewsSection } from "./sections/ReviewsSection";
 import { FAQSection } from "./sections/FAQSection";
 import { FooterSection } from "./sections/FooterSection";
 import { BookingPage } from "./pages/BookingPage";
+import ViewBookingsPage from "./pages/ViewBookingsPage";
 
 function HomePage() {
   return (
@@ -35,6 +36,7 @@ function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/book-now" element={<BookingPage />} />
+      <Route path="/view-bookings" element={<ViewBookingsPage />} />
     </Routes>
   );
 }

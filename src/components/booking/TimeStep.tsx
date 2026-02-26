@@ -15,7 +15,7 @@ const timeSlots = [
   '05:00 AM', '05:30 AM', '06:00 AM', '06:30 AM',
   '07:00 AM', '08:30 AM', '10:00 AM', '12:30 PM',
   '02:00 PM', '04:00 PM', '05:00 PM', '06:00 PM',
-  '06:00 PM', '8:30 PM', '09:00 PM', '10:00 PM'
+  '07:00 PM', '08:30 PM', '09:00 PM', '10:00 PM'
 ];
 
 export function TimeStep({ selectedTime, selectedDate, onTimeSelect, onNext, onBack }: TimeStepProps) {
@@ -75,7 +75,7 @@ export function TimeStep({ selectedTime, selectedDate, onTimeSelect, onNext, onB
               disabled={booked}
               className={`
                 p-4 rounded-lg border-2 text-center font-medium transition-all
-                ${booked ? 'border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed' : ''}
+                ${booked ? 'border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50 blur-[0.5px]' : ''}
                 ${!booked && !selected ? 'border-gray-300 bg-white hover:border-[#1E90FF] hover:bg-blue-50 cursor-pointer' : ''}
                 ${selected ? 'border-[#1E90FF] bg-[#1E90FF] text-white' : 'text-gray-900'}
               `}

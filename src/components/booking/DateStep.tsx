@@ -121,8 +121,8 @@ export function DateStep({ selectedDate, onDateSelect, onNext }: DateStepProps) 
                 disabled={disabled}
                 className={`
                   aspect-square rounded-full flex items-center justify-center text-sm font-medium
-                  transition-colors
-                  ${disabled ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 cursor-pointer'}
+                  transition-all
+                  ${disabled ? 'text-gray-300 cursor-not-allowed opacity-40 blur-[0.5px]' : 'hover:bg-gray-100 cursor-pointer'}
                   ${selected ? 'bg-[#1E90FF] text-white hover:bg-[#1873CC]' : 'text-gray-900'}
                 `}
               >

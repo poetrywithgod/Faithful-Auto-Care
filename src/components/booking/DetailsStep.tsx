@@ -35,20 +35,19 @@ export function DetailsStep({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async () => {
-    if (!name || !email || !phone) {
-      setError('Please fill in all fields');
-      return;
-    }
+  const generateBookingCode = (): string => {
+    return Math.floor(10000000 + Math.random() * 90000000).toString();
+  };
 
-    setIsSubmitting(true);
-    setError('');
+  const createBookingWithUniqueCode = async (maxAttempts = 5): Promise<{ data: any; bookingCode: string }> => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const bookingCode = generateBookingCode();
 
-    try {
       const { data, error: submitError } = await supabase
         .from('bookings')
         .insert([
           {
+            booking_code: bookingCode,
             booking_date: bookingData.date,
             booking_time: bookingData.time,
             service_type: bookingData.serviceType,
@@ -63,10 +62,54 @@ export function DetailsStep({
         .select()
         .single();
 
-      if (submitError) throw submitError;
+      if (!submitError) {
+        return { data, bookingCode };
+      }
+
+      if (submitError.code !== '23505') {
+        throw submitError;
+      }
+    }
+
+    throw new Error('Failed to generate unique booking code after multiple attempts');
+  };
+
+  const handleSubmit = async () => {
+    if (!name || !email || !phone) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const { data, bookingCode } = await createBookingWithUniqueCode();
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      await fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          booking_id: bookingCode,
+          customer_name: name,
+          customer_email: email,
+          customer_phone: phone,
+          booking_date: bookingData.date,
+          booking_time: bookingData.time,
+          service_type: bookingData.serviceType,
+          service_price: bookingData.servicePrice,
+          vehicle_type: bookingData.vehicleType,
+        }),
+      });
 
       onDetailsChange({ customerName: name, customerEmail: email, customerPhone: phone });
-      onNext(data.id);
+      onNext(bookingCode);
     } catch (err) {
       setError('Failed to create booking. Please try again.');
       console.error('Booking error:', err);
