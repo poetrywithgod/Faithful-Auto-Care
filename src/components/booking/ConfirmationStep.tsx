@@ -110,7 +110,7 @@ export function ConfirmationStep({ bookingData, bookingId }: ConfirmationStepPro
           Book Another Appointment
         </Button>
         <Button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/view-bookings')}
           variant="outline"
           className="flex-1 h-12 text-gray-700 border-gray-300"
         >
