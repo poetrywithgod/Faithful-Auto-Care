@@ -164,8 +164,6 @@ export const HeroSection = () => {
           }}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent"></div>
-
         <div className="container mx-auto px-6 relative z-10 py-32">
           <div className="max-w-2xl text-white">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 drop-shadow-lg">
