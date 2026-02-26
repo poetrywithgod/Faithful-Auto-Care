@@ -15,4 +15,7 @@ export default defineConfig({
       plugins: [tailwind()],
     },
   },
+  optimizeDeps: {
+    include: ["@supabase/supabase-js"],
+  },
 });
