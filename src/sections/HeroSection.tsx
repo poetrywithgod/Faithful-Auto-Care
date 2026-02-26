@@ -155,13 +155,10 @@ export const HeroSection = () => {
         id="hero"
         className="relative flex min-h-screen w-full items-center overflow-hidden"
       >
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/LandingPage1.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center'
-          }}
+        <img
+          src="/LandingPage1.png"
+          alt="Car wash background"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
