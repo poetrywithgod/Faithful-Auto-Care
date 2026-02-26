@@ -75,7 +75,7 @@ export function TimeStep({ selectedTime, selectedDate, onTimeSelect, onNext, onB
               disabled={booked}
               className={`
                 p-4 rounded-lg border-2 text-center font-medium transition-all
-                ${booked ? 'border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed' : ''}
+                ${booked ? 'border-gray-200 bg-gray-50 text-gray-300 cursor-not-allowed opacity-50 blur-[0.5px]' : ''}
                 ${!booked && !selected ? 'border-gray-300 bg-white hover:border-[#1E90FF] hover:bg-blue-50 cursor-pointer' : ''}
                 ${selected ? 'border-[#1E90FF] bg-[#1E90FF] text-white' : 'text-gray-900'}
               `}
