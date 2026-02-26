@@ -182,7 +182,7 @@ Deno.serve(async (req: Request) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Faithful Auto Care <bookings@faithfulautocare.com>",
+        from: "Faithful Auto Care <onboarding@resend.dev>",
         to: [customer_email],
         subject: `Booking Confirmation - ${service_type} - ${new Date(booking_date).toLocaleDateString()}`,
         html: emailHtml,

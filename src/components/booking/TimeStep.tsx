@@ -15,7 +15,7 @@ const timeSlots = [
   '05:00 AM', '05:30 AM', '06:00 AM', '06:30 AM',
   '07:00 AM', '08:30 AM', '10:00 AM', '12:30 PM',
   '02:00 PM', '04:00 PM', '05:00 PM', '06:00 PM',
-  '06:00 PM', '8:30 PM', '09:00 PM', '10:00 PM'
+  '07:00 PM', '08:30 PM', '09:00 PM', '10:00 PM'
 ];
 
 export function TimeStep({ selectedTime, selectedDate, onTimeSelect, onNext, onBack }: TimeStepProps) {
