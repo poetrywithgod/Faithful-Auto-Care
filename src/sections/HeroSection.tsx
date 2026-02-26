@@ -1,9 +1,11 @@
-import { MessageCircle, Phone } from "lucide-react";
+import { MessageCircle, Phone, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -17,25 +19,29 @@ export const HeroSection = () => {
         behavior: "smooth",
       });
     }
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <>
       <nav className="fixed top-0 left-0 z-50 w-full">
-        <div className="mx-auto mt-6 max-w-7xl px-6">
-          <div className="flex h-14 items-center justify-between rounded-xl bg-[#D6EAF84D] backdrop-blur-md px-6">
-            <div className="flex items-center gap-3">
+        <div className="mx-auto mt-4 sm:mt-6 max-w-7xl px-3 sm:px-6">
+          <div className="flex h-16 sm:h-14 items-center justify-between rounded-full bg-[#D6EAF84D] backdrop-blur-md px-4 sm:px-6 shadow-lg">
+            <div className="flex items-center gap-2 sm:gap-3">
               <img
                 src="/logo.png"
                 alt="Faithful Auto Care Logo"
-                className="h-10 w-auto"
+                className="h-8 sm:h-10 w-auto"
               />
-              <span className="text-lg text-blue-900 font-semibold uppercase tracking-wide">
+              <span className="text-sm sm:text-lg text-blue-900 font-semibold uppercase tracking-wide hidden sm:inline">
                 Faithful Auto Care
+              </span>
+              <span className="text-xs sm:text-lg text-blue-900 font-semibold uppercase tracking-wide sm:hidden">
+                Faithful
               </span>
             </div>
 
-            <ul className="hidden md:flex items-center gap-10 text-sm font-medium text-gray-700">
+            <ul className="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-700">
               <li
                 className="cursor-pointer hover:text-blue-600 transition"
                 onClick={() => scrollToSection("hero")}
@@ -68,16 +74,81 @@ export const HeroSection = () => {
               </li>
             </ul>
 
-            <div className="flex items-center gap-3">
-              <Button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button className="hidden sm:flex rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
                 <MessageCircle className="w-4 h-4" /> Chat us
               </Button>
-              <Button className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600">
+              <Button className="hidden sm:flex rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600">
                 <Phone className="w-4 h-4" /> Call
+              </Button>
+
+              <Button
+                className="sm:hidden rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
+
+              <Button
+                className="hidden lg:hidden md:flex rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
             </div>
           </div>
         </div>
+
+        {isMobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 top-24 sm:top-20 z-40">
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <div className="relative mx-3 sm:mx-6 mt-2 rounded-3xl bg-white shadow-2xl overflow-hidden">
+              <ul className="flex flex-col text-base font-medium">
+                <li
+                  className="cursor-pointer hover:bg-blue-50 transition px-6 py-4 border-b border-gray-100"
+                  onClick={() => scrollToSection("hero")}
+                >
+                  Home
+                </li>
+                <li
+                  className="cursor-pointer hover:bg-blue-50 transition px-6 py-4 border-b border-gray-100"
+                  onClick={() => scrollToSection("about")}
+                >
+                  About Us
+                </li>
+                <li
+                  className="cursor-pointer hover:bg-blue-50 transition px-6 py-4 border-b border-gray-100"
+                  onClick={() => scrollToSection("services")}
+                >
+                  Services
+                </li>
+                <li
+                  className="cursor-pointer hover:bg-blue-50 transition px-6 py-4 border-b border-gray-100"
+                  onClick={() => scrollToSection("process")}
+                >
+                  Process
+                </li>
+                <li
+                  className="cursor-pointer hover:bg-blue-50 transition px-6 py-4 border-b border-gray-100"
+                  onClick={() => scrollToSection("pricing")}
+                >
+                  Price
+                </li>
+                <li className="px-6 py-4 space-y-3">
+                  <Button className="w-full rounded-full bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700">
+                    <MessageCircle className="w-4 h-4 mr-2" /> Chat with us
+                  </Button>
+                  <Button className="w-full rounded-full bg-blue-500 px-4 py-3 text-sm font-medium text-white hover:bg-blue-600">
+                    <Phone className="w-4 h-4 mr-2" /> Call us
+                  </Button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
       </nav>
 
       <section
