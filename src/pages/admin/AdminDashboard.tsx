@@ -37,6 +37,7 @@ export const AdminDashboard = () => {
     satisfaction: 0,
   });
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
+  const [activeTab, setActiveTab] = useState("appointments");
 
   useEffect(() => {
     fetchDashboardData();
@@ -214,12 +215,32 @@ export const AdminDashboard = () => {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2 p-6">
-            <div className="flex items-center justify-between border-b pb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Upcoming Appointments</h2>
-              <Button variant="outline" size="sm">Weekly Analytics</Button>
+            <div className="flex items-center gap-4 border-b pb-0">
+              <button
+                onClick={() => setActiveTab("appointments")}
+                className={`pb-4 text-sm font-medium transition-colors ${
+                  activeTab === "appointments"
+                    ? "border-b-2 border-blue-600 text-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Upcoming Appointments
+              </button>
+              <button
+                onClick={() => setActiveTab("analytics")}
+                className={`pb-4 text-sm font-medium transition-colors ${
+                  activeTab === "analytics"
+                    ? "border-b-2 border-blue-600 text-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Weekly Analytics
+              </button>
             </div>
-            <div className="mt-4 space-y-4">
-              {upcomingBookings.map((booking) => (
+
+            {activeTab === "appointments" && (
+              <div className="mt-4 space-y-4">
+                {upcomingBookings.map((booking) => (
                 <div key={booking.id} className="flex items-center justify-between border-b pb-4 last:border-0">
                   <div className="flex items-center gap-4">
                     <div>
@@ -258,8 +279,102 @@ export const AdminDashboard = () => {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === "analytics" && (
+              <div className="mt-4 space-y-6">
+                <div>
+                  <h3 className="mb-4 text-sm font-semibold text-gray-900">Daily Revenue</h3>
+                  <div className="flex items-end justify-between gap-2" style={{ height: "200px" }}>
+                    {[
+                      { day: "Mon", value: 120, label: "120" },
+                      { day: "Tue", value: 200, label: "200" },
+                      { day: "Wed", value: 140, label: "140" },
+                      { day: "Thur", value: 80, label: "80" },
+                      { day: "Fri", value: 70, label: "70" },
+                      { day: "Sat", value: 110, label: "110" },
+                      { day: "Sun", value: 130, label: "130" },
+                    ].map((item, index) => (
+                      <div key={index} className="flex flex-1 flex-col items-center">
+                        <div className="relative w-full">
+                          <div
+                            className="w-full rounded-t bg-blue-600"
+                            style={{ height: `${item.value}px` }}
+                          />
+                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-600">
+                            {item.label}
+                          </span>
+                        </div>
+                        <span className="mt-2 text-xs text-gray-600">{item.day}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex items-center justify-center gap-4 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded bg-blue-600" />
+                      <span className="text-gray-600">Revenue</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg bg-yellow-100 p-3 text-center">
+                    <span className="text-xs text-gray-600">Bookings</span>
+                  </div>
+                  <div className="rounded-lg bg-purple-100 p-3 text-center">
+                    <span className="text-xs text-gray-600">Customer</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="relative" style={{ height: "200px" }}>
+                    <svg className="h-full w-full">
+                      <polyline
+                        fill="none"
+                        stroke="#EAB308"
+                        strokeWidth="2"
+                        points="0,120 60,80 120,100 180,70 240,60 300,70 360,60"
+                      />
+                      <polyline
+                        fill="none"
+                        stroke="#9333EA"
+                        strokeWidth="2"
+                        points="0,160 60,150 120,140 180,130 240,110 300,120 360,100"
+                      />
+                    </svg>
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600">
+                      <span>Mon</span>
+                      <span>Tue</span>
+                      <span>Wed</span>
+                      <span>Thu</span>
+                      <span>Fri</span>
+                      <span>Sat</span>
+                      <span>Sun</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 border-t pt-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Booking (This week)</p>
+                    <p className="mt-1 text-2xl font-bold text-gray-900">45</p>
+                    <p className="text-xs text-gray-500">Average: 6 per day</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Revenue (This week)</p>
+                    <p className="mt-1 text-2xl font-bold text-gray-900">£ 1,389</p>
+                    <p className="text-xs text-gray-500">Average: £348 per day</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Customer (This week)</p>
+                    <p className="mt-1 text-2xl font-bold text-gray-900">31</p>
+                    <p className="text-xs text-gray-500">Average: 10 per day</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </Card>
 
           <div className="space-y-6">

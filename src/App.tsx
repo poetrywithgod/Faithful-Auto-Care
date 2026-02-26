@@ -17,6 +17,8 @@ import { AdminBookings } from "./pages/admin/AdminBookings";
 import { AdminCustomers } from "./pages/admin/AdminCustomers";
 import { AdminServices } from "./pages/admin/AdminServices";
 import { AdminReviews } from "./pages/admin/AdminReviews";
+import { AdminTeams } from "./pages/admin/AdminTeams";
+import { AdminTimeSlot } from "./pages/admin/AdminTimeSlot";
 
 function HomePage() {
   return (
@@ -44,9 +46,11 @@ function App() {
       <Route path="/view-bookings" element={<ViewBookingsPage />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/bookings" element={<AdminBookings />} />
+      <Route path="/admin/timeslot" element={<AdminTimeSlot />} />
       <Route path="/admin/customers" element={<AdminCustomers />} />
       <Route path="/admin/services" element={<AdminServices />} />
       <Route path="/admin/reviews" element={<AdminReviews />} />
+      <Route path="/admin/teams" element={<AdminTeams />} />
     </Routes>
   );
 }
