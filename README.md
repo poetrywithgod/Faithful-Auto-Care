@@ -510,6 +510,52 @@ const { data } = await supabase
 - `/admin/teams` - Team member management
 - `/admin/timeslot` - Time slot configuration
 
+**Database Operations:**
+
+##### Overview Statistics (Lines 73-104):
+```typescript
+const { data: bookings } = await supabase.from("bookings").select("*");
+const { data: reviews } = await supabase
+  .from("reviews")
+  .select("rating")
+  .eq("status", "approved");
+```
+
+**Calculates:**
+- Total bookings count
+- Total revenue (sum of all booking prices)
+- Unique customers (distinct email addresses)
+- Average rating from approved reviews
+- Completion rate (confirmed bookings %)
+- Cancellation rate (cancelled bookings %)
+
+##### Weekly Analytics (Lines 106-152):
+```typescript
+const { data: bookings } = await supabase
+  .from("bookings")
+  .select("*")
+  .gte("booking_date", sevenDaysAgo)
+  .lte("booking_date", today);
+```
+
+**Functionality:**
+- Fetches bookings from the last 7 days
+- Groups data by day of the week
+- Calculates for each day:
+  - Revenue (sum of service prices)
+  - Number of bookings
+  - Unique customers
+- Displays three visualizations:
+  1. **Daily Revenue Bar Chart** - Shows revenue for each day
+  2. **Bookings & Customers Line Chart** - Trends over the week
+  3. **Weekly Totals** - Summary statistics with daily averages
+
+**Why this approach:**
+- Real-time data directly from the database
+- Date-based filtering ensures only relevant data is shown
+- Grouping by day provides actionable insights for business decisions
+- Dynamic charts scale based on actual data values
+
 **Note:** Admin pages are currently accessible without authentication (future enhancement needed)
 
 ---
@@ -674,6 +720,71 @@ User selects date
        └─► Booked slots: disabled, grayed out, blurred
 ```
 
+### Weekly Analytics Data Flow
+
+```
+Admin navigates to /admin
+   │
+   ├─► AdminDashboard component mounts
+   │
+   ├─► useEffect hooks trigger two functions:
+   │   ├─► fetchDashboardData() - Overall statistics
+   │   └─► fetchWeeklyAnalytics() - Last 7 days data
+   │
+   ├─► fetchWeeklyAnalytics() executes:
+   │   │
+   │   ├─► Calculate date range:
+   │   │   today = current date
+   │   │   sevenDaysAgo = today - 6 days
+   │   │
+   │   ├─► Database Query:
+   │   │   SELECT * FROM bookings
+   │   │   WHERE booking_date >= sevenDaysAgo
+   │   │   AND booking_date <= today
+   │   │
+   │   ├─► Response: Array of bookings from last 7 days
+   │   │
+   │   ├─► Process data for each day:
+   │   │   │
+   │   │   ├─► Filter bookings by date
+   │   │   │
+   │   │   ├─► Calculate metrics:
+   │   │   │   - Revenue: SUM(service_price)
+   │   │   │   - Bookings: COUNT(bookings)
+   │   │   │   - Customers: COUNT(DISTINCT customer_email)
+   │   │   │
+   │   │   └─► Store in dailyData array with day name
+   │   │
+   │   ├─► Calculate weekly totals:
+   │   │   - totalBookings = all bookings count
+   │   │   - totalRevenue = sum of all prices
+   │   │   - totalCustomers = unique emails count
+   │   │   - avgBookingsPerDay = totalBookings / 7
+   │   │   - avgRevenuePerDay = totalRevenue / 7
+   │   │
+   │   └─► Update state: setWeeklyStats()
+   │
+   ├─► User clicks "Weekly Analytics" tab
+   │
+   └─► UI renders with real data:
+       │
+       ├─► Daily Revenue Bar Chart:
+       │   - Maps through dailyData
+       │   - Calculates bar height based on max revenue
+       │   - Displays £{revenue} label above each bar
+       │
+       ├─► Bookings & Customers Line Chart:
+       │   - Generates SVG polyline for bookings (yellow)
+       │   - Generates SVG polyline for customers (purple)
+       │   - Scales based on max values
+       │
+       └─► Weekly Summary Statistics:
+           - Total Bookings: {weeklyStats.totalBookings}
+           - Total Revenue: £{weeklyStats.totalRevenue}
+           - Total Customers: {weeklyStats.totalCustomers}
+           - Shows daily averages for each metric
+```
+
 ---
 
 ## Setup & Installation
@@ -743,6 +854,9 @@ RESEND_API_KEY=your_resend_api_key
 | TimeStep.tsx | bookings | SELECT | 34-37 | Fetch booked times for date |
 | DetailsStep.tsx | bookings | INSERT | 46-63 | Create new booking |
 | ViewBookingsPage.tsx | bookings | SELECT | 43-47 | Retrieve user bookings |
+| AdminDashboard.tsx | bookings | SELECT | 73-104 | Fetch all bookings for dashboard stats |
+| AdminDashboard.tsx | reviews | SELECT | 76-79 | Fetch approved reviews for avg rating |
+| AdminDashboard.tsx | bookings | SELECT | 106-152 | Fetch weekly analytics (last 7 days) |
 
 ### Frontend ↔ Edge Functions
 
