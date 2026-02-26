@@ -72,6 +72,12 @@ export const HeroSection = () => {
               >
                 Price
               </li>
+              <li
+                className="cursor-pointer hover:text-blue-600 transition"
+                onClick={() => navigate("/view-bookings")}
+              >
+                My Bookings
+              </li>
             </ul>
 
             <div className="flex items-center gap-2 sm:gap-3">
@@ -137,6 +143,15 @@ export const HeroSection = () => {
                 >
                   Price
                 </li>
+                <li
+                  className="cursor-pointer hover:bg-blue-50 transition px-6 py-4 border-b border-gray-100"
+                  onClick={() => {
+                    navigate("/view-bookings");
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  My Bookings
+                </li>
                 <li className="px-6 py-4 space-y-3">
                   <Button className="w-full rounded-full bg-blue-600 px-4 py-3 text-sm font-medium text-white hover:bg-blue-700">
                     <MessageCircle className="w-4 h-4 mr-2" /> Chat with us
@@ -156,7 +171,7 @@ export const HeroSection = () => {
         className="relative flex min-h-screen w-full items-center overflow-hidden"
       >
         <img
-          src="/manonym_logo.jpg"
+          src="/LandingPage1.png"
           alt="Car wash background"
           className="absolute inset-0 w-full h-full object-cover"
         />
