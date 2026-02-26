@@ -65,6 +65,28 @@ export function DetailsStep({
 
       if (submitError) throw submitError;
 
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      await fetch(`${supabaseUrl}/functions/v1/send-booking-email`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          booking_id: data.id,
+          customer_name: name,
+          customer_email: email,
+          customer_phone: phone,
+          booking_date: bookingData.date,
+          booking_time: bookingData.time,
+          service_type: bookingData.serviceType,
+          service_price: bookingData.servicePrice,
+          vehicle_type: bookingData.vehicleType,
+        }),
+      });
+
       onDetailsChange({ customerName: name, customerEmail: email, customerPhone: phone });
       onNext(data.id);
     } catch (err) {
