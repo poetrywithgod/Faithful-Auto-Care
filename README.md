@@ -36,6 +36,12 @@ Faithful Auto Care is a modern car wash booking platform that allows customers t
 - Validation occurs at submission to prevent race conditions
 - Clear error messages guide users to select alternative times
 
+**Email Notification System:**
+- Customer confirmation emails sent automatically upon booking
+- Admin notification emails for new bookings with full details
+- Configurable admin recipients through admin dashboard
+- Professional HTML email templates for both customers and admins
+
 The application also includes an admin dashboard for managing bookings, services, teams, and time slots.
 
 ---
@@ -101,7 +107,7 @@ The application follows a modern JAMstack architecture:
 
 ### Tables Overview
 
-The database consists of 6 main tables, all protected by Row Level Security (RLS):
+The database consists of 7 main tables, all protected by Row Level Security (RLS):
 
 #### 1. `bookings`
 Stores all customer booking information.
@@ -236,6 +242,31 @@ Stores blocked time slots (already booked or unavailable).
 - Public can view all blocked times (SELECT)
 
 **Migration:** `20260226211606_create_teams_and_timeslots.sql`
+
+---
+
+#### 7. `admin_notifications`
+Stores admin email addresses for booking notifications.
+
+**Columns:**
+- `id` (uuid, PK) - Admin notification identifier
+- `name` (text) - Admin name
+- `email` (text, unique) - Admin email address
+- `receive_new_bookings` (boolean) - Whether to receive new booking notifications (default: true)
+- `is_active` (boolean) - Whether the admin is active (default: true)
+- `created_at` (timestamptz) - Creation timestamp
+- `updated_at` (timestamptz) - Last update timestamp
+
+**Constraints:**
+- UNIQUE constraint on `email`
+
+**RLS Policies:**
+- Anyone can read active admins (SELECT WHERE is_active = true)
+
+**Migration:** `create_admin_notifications_table.sql`
+
+**Purpose:**
+This table manages which admins receive email notifications when new bookings are created. Admins can be managed through the admin dashboard at `/admin/notifications`.
 
 ---
 
@@ -521,6 +552,7 @@ const { data } = await supabase
 - `/admin/reviews` - Review moderation
 - `/admin/teams` - Team member management
 - `/admin/timeslot` - Time slot configuration
+- `/admin/notifications` - Email notification recipients management
 
 **Database Operations:**
 
@@ -580,13 +612,14 @@ src/
 │   ├── BookingPage.tsx          # Main booking flow orchestrator
 │   ├── ViewBookingsPage.tsx     # Booking history lookup
 │   └── admin/
-│       ├── AdminDashboard.tsx   # Admin overview
-│       ├── AdminBookings.tsx    # Booking management
-│       ├── AdminCustomers.tsx   # Customer management
-│       ├── AdminServices.tsx    # Service management
-│       ├── AdminReviews.tsx     # Review management
-│       ├── AdminTeams.tsx       # Team management
-│       └── AdminTimeSlot.tsx    # Schedule management
+│       ├── AdminDashboard.tsx       # Admin overview
+│       ├── AdminBookings.tsx        # Booking management
+│       ├── AdminCustomers.tsx       # Customer management
+│       ├── AdminServices.tsx        # Service management
+│       ├── AdminReviews.tsx         # Review management
+│       ├── AdminTeams.tsx           # Team management
+│       ├── AdminTimeSlot.tsx        # Schedule management
+│       └── AdminNotifications.tsx   # Email notification management
 │
 ├── components/
 │   ├── booking/
@@ -942,13 +975,27 @@ RESEND_API_KEY=your_resend_api_key
 
 | Component | Edge Function | Method | Lines | Purpose |
 |-----------|--------------|--------|-------|---------|
-| DetailsStep.tsx | send-booking-email | POST | 92-109 | Send confirmation email |
+| DetailsStep.tsx | send-booking-email | POST | 92-109 | Send customer confirmation and admin notification emails |
+
+### Edge Functions ↔ Database
+
+| Edge Function | Database Table | Operation | Purpose |
+|--------------|---------------|-----------|---------|
+| send-booking-email | admin_notifications | SELECT | Fetch active admins who receive booking notifications |
 
 ### Edge Functions ↔ External APIs
 
 | Edge Function | External API | Purpose |
 |--------------|-------------|---------|
-| send-booking-email | Resend API | Email delivery service |
+| send-booking-email | Resend API | Email delivery service (customer confirmation + admin notifications) |
+
+### Email Notification Flow
+
+When a booking is created:
+1. Customer receives confirmation email with booking details
+2. System queries `admin_notifications` table for active admins with `receive_new_bookings = true`
+3. All matching admins receive notification email with full booking information
+4. Admin emails include customer contact details and booking specifics for quick action
 
 ---
 

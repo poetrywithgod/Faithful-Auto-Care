@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Calendar, Clock, Users, Settings as SettingsIcon, Star, UserCog, LogOut, ChevronLeft } from "lucide-react";
+import { LayoutDashboard, Calendar, Clock, Users, Settings as SettingsIcon, Star, UserCog, LogOut, ChevronLeft, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface AdminLayoutProps {
@@ -20,6 +20,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
     { icon: SettingsIcon, label: "Service", path: "/admin/services" },
     { icon: Star, label: "Reviews", path: "/admin/reviews" },
     { icon: UserCog, label: "Teams", path: "/admin/teams" },
+    { icon: Bell, label: "Notifications", path: "/admin/notifications" },
   ];
 
   const isActive = (path: string) => {
