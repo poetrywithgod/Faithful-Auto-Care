@@ -24,6 +24,24 @@ Faithful Auto Care is a modern car wash booking platform that allows customers t
 - Receive email confirmations
 - View booking history
 
+### Booking System Features
+
+**Multi-Booking Capability:**
+- Each time slot can accommodate up to 3 customers simultaneously
+- Real-time availability tracking shows remaining spots (e.g., "2 spots left")
+- Time slots become unavailable once 3 bookings are reached
+
+**Duplicate Prevention:**
+- Customers cannot book the same time slot twice (identified by email)
+- Validation occurs at submission to prevent race conditions
+- Clear error messages guide users to select alternative times
+
+**Email Notification System:**
+- Customer confirmation emails sent automatically upon booking
+- Admin notification emails for new bookings with full details
+- Configurable admin recipients through admin dashboard
+- Professional HTML email templates for both customers and admins
+
 The application also includes an admin dashboard for managing bookings, services, teams, and time slots.
 
 ---
@@ -89,7 +107,7 @@ The application follows a modern JAMstack architecture:
 
 ### Tables Overview
 
-The database consists of 6 main tables, all protected by Row Level Security (RLS):
+The database consists of 7 main tables, all protected by Row Level Security (RLS):
 
 #### 1. `bookings`
 Stores all customer booking information.
@@ -224,6 +242,31 @@ Stores blocked time slots (already booked or unavailable).
 - Public can view all blocked times (SELECT)
 
 **Migration:** `20260226211606_create_teams_and_timeslots.sql`
+
+---
+
+#### 7. `admin_notifications`
+Stores admin email addresses for booking notifications.
+
+**Columns:**
+- `id` (uuid, PK) - Admin notification identifier
+- `name` (text) - Admin name
+- `email` (text, unique) - Admin email address
+- `receive_new_bookings` (boolean) - Whether to receive new booking notifications (default: true)
+- `is_active` (boolean) - Whether the admin is active (default: true)
+- `created_at` (timestamptz) - Creation timestamp
+- `updated_at` (timestamptz) - Last update timestamp
+
+**Constraints:**
+- UNIQUE constraint on `email`
+
+**RLS Policies:**
+- Anyone can read active admins (SELECT WHERE is_active = true)
+
+**Migration:** `create_admin_notifications_table.sql`
+
+**Purpose:**
+This table manages which admins receive email notifications when new bookings are created. Admins can be managed through the admin dashboard at `/admin/notifications`.
 
 ---
 
@@ -509,6 +552,53 @@ const { data } = await supabase
 - `/admin/reviews` - Review moderation
 - `/admin/teams` - Team member management
 - `/admin/timeslot` - Time slot configuration
+- `/admin/notifications` - Email notification recipients management
+
+**Database Operations:**
+
+##### Overview Statistics (Lines 73-104):
+```typescript
+const { data: bookings } = await supabase.from("bookings").select("*");
+const { data: reviews } = await supabase
+  .from("reviews")
+  .select("rating")
+  .eq("status", "approved");
+```
+
+**Calculates:**
+- Total bookings count
+- Total revenue (sum of all booking prices)
+- Unique customers (distinct email addresses)
+- Average rating from approved reviews
+- Completion rate (confirmed bookings %)
+- Cancellation rate (cancelled bookings %)
+
+##### Weekly Analytics (Lines 106-152):
+```typescript
+const { data: bookings } = await supabase
+  .from("bookings")
+  .select("*")
+  .gte("booking_date", sevenDaysAgo)
+  .lte("booking_date", today);
+```
+
+**Functionality:**
+- Fetches bookings from the last 7 days
+- Groups data by day of the week
+- Calculates for each day:
+  - Revenue (sum of service prices)
+  - Number of bookings
+  - Unique customers
+- Displays three visualizations:
+  1. **Daily Revenue Bar Chart** - Shows revenue for each day
+  2. **Bookings & Customers Line Chart** - Trends over the week
+  3. **Weekly Totals** - Summary statistics with daily averages
+
+**Why this approach:**
+- Real-time data directly from the database
+- Date-based filtering ensures only relevant data is shown
+- Grouping by day provides actionable insights for business decisions
+- Dynamic charts scale based on actual data values
 
 **Note:** Admin pages are currently accessible without authentication (future enhancement needed)
 
@@ -522,13 +612,14 @@ src/
 │   ├── BookingPage.tsx          # Main booking flow orchestrator
 │   ├── ViewBookingsPage.tsx     # Booking history lookup
 │   └── admin/
-│       ├── AdminDashboard.tsx   # Admin overview
-│       ├── AdminBookings.tsx    # Booking management
-│       ├── AdminCustomers.tsx   # Customer management
-│       ├── AdminServices.tsx    # Service management
-│       ├── AdminReviews.tsx     # Review management
-│       ├── AdminTeams.tsx       # Team management
-│       └── AdminTimeSlot.tsx    # Schedule management
+│       ├── AdminDashboard.tsx       # Admin overview
+│       ├── AdminBookings.tsx        # Booking management
+│       ├── AdminCustomers.tsx       # Customer management
+│       ├── AdminServices.tsx        # Service management
+│       ├── AdminReviews.tsx         # Review management
+│       ├── AdminTeams.tsx           # Team management
+│       ├── AdminTimeSlot.tsx        # Schedule management
+│       └── AdminNotifications.tsx   # Email notification management
 │
 ├── components/
 │   ├── booking/
@@ -651,7 +742,9 @@ src/
        └─► Show booking_code, date, time, service, status
 ```
 
-### Time Slot Availability Check
+### Time Slot Availability Check (Multi-Booking System)
+
+**System Capacity:** Each time slot can accommodate up to 3 customers
 
 ```
 User selects date
@@ -664,14 +757,143 @@ User selects date
    │   SELECT booking_time FROM bookings
    │   WHERE booking_date = selectedDate
    │
-   ├─► Response: Array of booked time strings
-   │   Example: ['05:00 AM', '10:00 AM', '02:00 PM']
+   ├─► Response: Array of all bookings for that date
+   │   Example: [
+   │     { booking_time: '05:00 AM' },
+   │     { booking_time: '05:00 AM' },
+   │     { booking_time: '10:00 AM' }
+   │   ]
    │
-   ├─► Component state updated: setBookedTimes(data)
+   ├─► Process bookings:
+   │   │
+   │   ├─► Count bookings per time slot
+   │   │   timeSlotCounts = {
+   │   │     '05:00 AM': 2,    // 1 spot remaining
+   │   │     '10:00 AM': 1,    // 2 spots remaining
+   │   │   }
+   │   │
+   │   └─► Calculate availability:
+   │       - Full (>= 3 bookings): Disabled, grayed out, shows "Full"
+   │       - Partially booked (1-2 bookings): Available, shows "X spots left"
+   │       - Empty (0 bookings): Available, no indicator
+   │
+   ├─► Component state updated: setTimeSlotCounts(counts)
    │
    └─► UI renders:
-       ├─► Available slots: clickable, white background
-       └─► Booked slots: disabled, grayed out, blurred
+       ├─► Full slots (3 bookings):
+       │   - Disabled, grayed out, blurred, shows "Full"
+       ├─► Partially booked slots (1-2 bookings):
+       │   - Clickable, white background, shows "X spots left"
+       └─► Empty slots (0 bookings):
+           - Clickable, white background, no indicator
+```
+
+### Duplicate Booking Prevention
+
+**Rule:** One person cannot book the same time slot twice
+
+```
+User completes booking form and clicks Submit
+   │
+   ├─► DetailsStep component validates
+   │
+   ├─► Check 1 - Duplicate Prevention:
+   │   │
+   │   ├─► Database Query:
+   │   │   SELECT id FROM bookings
+   │   │   WHERE booking_date = selectedDate
+   │   │   AND booking_time = selectedTime
+   │   │   AND customer_email = enteredEmail
+   │   │
+   │   ├─► If booking exists:
+   │   │   └─► Show error: "You have already booked this time slot"
+   │   │   └─► Stop submission
+   │   │
+   │   └─► If no booking found: Continue to Check 2
+   │
+   ├─► Check 2 - Capacity Verification:
+   │   │
+   │   ├─► Database Query:
+   │   │   SELECT id FROM bookings
+   │   │   WHERE booking_date = selectedDate
+   │   │   AND booking_time = selectedTime
+   │   │
+   │   ├─► Count results
+   │   │
+   │   ├─► If count >= 3:
+   │   │   └─► Show error: "This time slot is now full"
+   │   │   └─► Stop submission
+   │   │
+   │   └─► If count < 3: Continue to booking creation
+   │
+   ├─► Create booking with unique code
+   │
+   └─► Send confirmation email
+```
+
+### Weekly Analytics Data Flow
+
+```
+Admin navigates to /admin
+   │
+   ├─► AdminDashboard component mounts
+   │
+   ├─► useEffect hooks trigger two functions:
+   │   ├─► fetchDashboardData() - Overall statistics
+   │   └─► fetchWeeklyAnalytics() - Last 7 days data
+   │
+   ├─► fetchWeeklyAnalytics() executes:
+   │   │
+   │   ├─► Calculate date range:
+   │   │   today = current date
+   │   │   sevenDaysAgo = today - 6 days
+   │   │
+   │   ├─► Database Query:
+   │   │   SELECT * FROM bookings
+   │   │   WHERE booking_date >= sevenDaysAgo
+   │   │   AND booking_date <= today
+   │   │
+   │   ├─► Response: Array of bookings from last 7 days
+   │   │
+   │   ├─► Process data for each day:
+   │   │   │
+   │   │   ├─► Filter bookings by date
+   │   │   │
+   │   │   ├─► Calculate metrics:
+   │   │   │   - Revenue: SUM(service_price)
+   │   │   │   - Bookings: COUNT(bookings)
+   │   │   │   - Customers: COUNT(DISTINCT customer_email)
+   │   │   │
+   │   │   └─► Store in dailyData array with day name
+   │   │
+   │   ├─► Calculate weekly totals:
+   │   │   - totalBookings = all bookings count
+   │   │   - totalRevenue = sum of all prices
+   │   │   - totalCustomers = unique emails count
+   │   │   - avgBookingsPerDay = totalBookings / 7
+   │   │   - avgRevenuePerDay = totalRevenue / 7
+   │   │
+   │   └─► Update state: setWeeklyStats()
+   │
+   ├─► User clicks "Weekly Analytics" tab
+   │
+   └─► UI renders with real data:
+       │
+       ├─► Daily Revenue Bar Chart:
+       │   - Maps through dailyData
+       │   - Calculates bar height based on max revenue
+       │   - Displays £{revenue} label above each bar
+       │
+       ├─► Bookings & Customers Line Chart:
+       │   - Generates SVG polyline for bookings (yellow)
+       │   - Generates SVG polyline for customers (purple)
+       │   - Scales based on max values
+       │
+       └─► Weekly Summary Statistics:
+           - Total Bookings: {weeklyStats.totalBookings}
+           - Total Revenue: £{weeklyStats.totalRevenue}
+           - Total Customers: {weeklyStats.totalCustomers}
+           - Shows daily averages for each metric
 ```
 
 ---
@@ -740,21 +962,40 @@ RESEND_API_KEY=your_resend_api_key
 
 | Component | Database Table | Operation | Lines | Purpose |
 |-----------|---------------|-----------|-------|---------|
-| TimeStep.tsx | bookings | SELECT | 34-37 | Fetch booked times for date |
+| TimeStep.tsx | bookings | SELECT | 34-45 | Fetch bookings and count per time slot (max 3 per slot) |
+| DetailsStep.tsx | bookings | SELECT | 87-93 | Check if user already booked this slot (prevent duplicates) |
+| DetailsStep.tsx | bookings | SELECT | 101-105 | Verify slot capacity before booking (enforce 3 max) |
 | DetailsStep.tsx | bookings | INSERT | 46-63 | Create new booking |
 | ViewBookingsPage.tsx | bookings | SELECT | 43-47 | Retrieve user bookings |
+| AdminDashboard.tsx | bookings | SELECT | 73-104 | Fetch all bookings for dashboard stats |
+| AdminDashboard.tsx | reviews | SELECT | 76-79 | Fetch approved reviews for avg rating |
+| AdminDashboard.tsx | bookings | SELECT | 106-152 | Fetch weekly analytics (last 7 days) |
 
 ### Frontend ↔ Edge Functions
 
 | Component | Edge Function | Method | Lines | Purpose |
 |-----------|--------------|--------|-------|---------|
-| DetailsStep.tsx | send-booking-email | POST | 92-109 | Send confirmation email |
+| DetailsStep.tsx | send-booking-email | POST | 92-109 | Send customer confirmation and admin notification emails |
+
+### Edge Functions ↔ Database
+
+| Edge Function | Database Table | Operation | Purpose |
+|--------------|---------------|-----------|---------|
+| send-booking-email | admin_notifications | SELECT | Fetch active admins who receive booking notifications |
 
 ### Edge Functions ↔ External APIs
 
 | Edge Function | External API | Purpose |
 |--------------|-------------|---------|
-| send-booking-email | Resend API | Email delivery service |
+| send-booking-email | Resend API | Email delivery service (customer confirmation + admin notifications) |
+
+### Email Notification Flow
+
+When a booking is created:
+1. Customer receives confirmation email with booking details
+2. System queries `admin_notifications` table for active admins with `receive_new_bookings = true`
+3. All matching admins receive notification email with full booking information
+4. Admin emails include customer contact details and booking specifics for quick action
 
 ---
 

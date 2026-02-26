@@ -19,6 +19,7 @@ import { AdminServices } from "./pages/admin/AdminServices";
 import { AdminReviews } from "./pages/admin/AdminReviews";
 import { AdminTeams } from "./pages/admin/AdminTeams";
 import { AdminTimeSlot } from "./pages/admin/AdminTimeSlot";
+import { AdminNotifications } from "./pages/admin/AdminNotifications";
 
 function HomePage() {
   return (
@@ -51,6 +52,7 @@ function App() {
       <Route path="/admin/services" element={<AdminServices />} />
       <Route path="/admin/reviews" element={<AdminReviews />} />
       <Route path="/admin/teams" element={<AdminTeams />} />
+      <Route path="/admin/notifications" element={<AdminNotifications />} />
     </Routes>
   );
 }

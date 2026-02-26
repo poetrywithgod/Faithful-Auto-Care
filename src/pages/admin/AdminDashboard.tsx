@@ -24,6 +24,24 @@ interface Booking {
   service_price: number;
   status: string;
   customer_phone: string;
+  booking_date: string;
+  customer_email: string;
+}
+
+interface DailyAnalytics {
+  day: string;
+  revenue: number;
+  bookings: number;
+  customers: number;
+}
+
+interface WeeklyStats {
+  dailyData: DailyAnalytics[];
+  totalBookings: number;
+  totalRevenue: number;
+  totalCustomers: number;
+  avgBookingsPerDay: number;
+  avgRevenuePerDay: number;
 }
 
 export const AdminDashboard = () => {
@@ -38,9 +56,18 @@ export const AdminDashboard = () => {
   });
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [activeTab, setActiveTab] = useState("appointments");
+  const [weeklyStats, setWeeklyStats] = useState<WeeklyStats>({
+    dailyData: [],
+    totalBookings: 0,
+    totalRevenue: 0,
+    totalCustomers: 0,
+    avgBookingsPerDay: 0,
+    avgRevenuePerDay: 0,
+  });
 
   useEffect(() => {
     fetchDashboardData();
+    fetchWeeklyAnalytics();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -73,6 +100,54 @@ export const AdminDashboard = () => {
       });
 
       setUpcomingBookings(bookings.slice(0, 3) as Booking[]);
+    }
+  };
+
+  const fetchWeeklyAnalytics = async () => {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6);
+
+    const { data: bookings } = await supabase
+      .from("bookings")
+      .select("*")
+      .gte("booking_date", sevenDaysAgo.toISOString().split('T')[0])
+      .lte("booking_date", today.toISOString().split('T')[0]);
+
+    if (bookings) {
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dailyData: DailyAnalytics[] = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const dateString = date.toISOString().split('T')[0];
+        const dayName = dayNames[date.getDay()];
+
+        const dayBookings = bookings.filter(b => b.booking_date === dateString);
+        const dayRevenue = dayBookings.reduce((sum, b) => sum + (b.service_price || 0), 0);
+        const dayCustomers = new Set(dayBookings.map(b => b.customer_email)).size;
+
+        dailyData.push({
+          day: dayName,
+          revenue: dayRevenue,
+          bookings: dayBookings.length,
+          customers: dayCustomers,
+        });
+      }
+
+      const totalBookings = bookings.length;
+      const totalRevenue = bookings.reduce((sum, b) => sum + (b.service_price || 0), 0);
+      const totalCustomers = new Set(bookings.map(b => b.customer_email)).size;
+
+      setWeeklyStats({
+        dailyData,
+        totalBookings,
+        totalRevenue,
+        totalCustomers,
+        avgBookingsPerDay: Math.round(totalBookings / 7),
+        avgRevenuePerDay: Math.round(totalRevenue / 7),
+      });
     }
   };
 
@@ -288,28 +363,25 @@ export const AdminDashboard = () => {
                 <div>
                   <h3 className="mb-4 text-sm font-semibold text-gray-900">Daily Revenue</h3>
                   <div className="flex items-end justify-between gap-2" style={{ height: "200px" }}>
-                    {[
-                      { day: "Mon", value: 120, label: "120" },
-                      { day: "Tue", value: 200, label: "200" },
-                      { day: "Wed", value: 140, label: "140" },
-                      { day: "Thur", value: 80, label: "80" },
-                      { day: "Fri", value: 70, label: "70" },
-                      { day: "Sat", value: 110, label: "110" },
-                      { day: "Sun", value: 130, label: "130" },
-                    ].map((item, index) => (
-                      <div key={index} className="flex flex-1 flex-col items-center">
-                        <div className="relative w-full">
-                          <div
-                            className="w-full rounded-t bg-blue-600"
-                            style={{ height: `${item.value}px` }}
-                          />
-                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-600">
-                            {item.label}
-                          </span>
+                    {weeklyStats.dailyData.map((item, index) => {
+                      const maxRevenue = Math.max(...weeklyStats.dailyData.map(d => d.revenue), 1);
+                      const height = (item.revenue / maxRevenue) * 180;
+
+                      return (
+                        <div key={index} className="flex flex-1 flex-col items-center">
+                          <div className="relative w-full">
+                            <div
+                              className="w-full rounded-t bg-blue-600"
+                              style={{ height: `${height}px` }}
+                            />
+                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-600">
+                              £{item.revenue}
+                            </span>
+                          </div>
+                          <span className="mt-2 text-xs text-gray-600">{item.day}</span>
                         </div>
-                        <span className="mt-2 text-xs text-gray-600">{item.day}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <div className="mt-4 flex items-center justify-center gap-4 text-xs">
                     <div className="flex items-center gap-2">
@@ -330,28 +402,34 @@ export const AdminDashboard = () => {
 
                 <div>
                   <div className="relative" style={{ height: "200px" }}>
-                    <svg className="h-full w-full">
+                    <svg className="h-full w-full" viewBox="0 0 350 200">
                       <polyline
                         fill="none"
                         stroke="#EAB308"
                         strokeWidth="2"
-                        points="0,120 60,80 120,100 180,70 240,60 300,70 360,60"
+                        points={weeklyStats.dailyData.map((item, i) => {
+                          const maxBookings = Math.max(...weeklyStats.dailyData.map(d => d.bookings), 1);
+                          const x = (i * 350) / 6;
+                          const y = 180 - ((item.bookings / maxBookings) * 140);
+                          return `${x},${y}`;
+                        }).join(' ')}
                       />
                       <polyline
                         fill="none"
                         stroke="#9333EA"
                         strokeWidth="2"
-                        points="0,160 60,150 120,140 180,130 240,110 300,120 360,100"
+                        points={weeklyStats.dailyData.map((item, i) => {
+                          const maxCustomers = Math.max(...weeklyStats.dailyData.map(d => d.customers), 1);
+                          const x = (i * 350) / 6;
+                          const y = 180 - ((item.customers / maxCustomers) * 140);
+                          return `${x},${y}`;
+                        }).join(' ')}
                       />
                     </svg>
-                    <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600">
-                      <span>Mon</span>
-                      <span>Tue</span>
-                      <span>Wed</span>
-                      <span>Thu</span>
-                      <span>Fri</span>
-                      <span>Sat</span>
-                      <span>Sun</span>
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600 px-2">
+                      {weeklyStats.dailyData.map((item, index) => (
+                        <span key={index}>{item.day}</span>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -359,18 +437,18 @@ export const AdminDashboard = () => {
                 <div className="grid grid-cols-3 gap-4 border-t pt-4">
                   <div>
                     <p className="text-sm font-medium text-gray-600">Total Booking (This week)</p>
-                    <p className="mt-1 text-2xl font-bold text-gray-900">45</p>
-                    <p className="text-xs text-gray-500">Average: 6 per day</p>
+                    <p className="mt-1 text-2xl font-bold text-gray-900">{weeklyStats.totalBookings}</p>
+                    <p className="text-xs text-gray-500">Average: {weeklyStats.avgBookingsPerDay} per day</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Total Revenue (This week)</p>
-                    <p className="mt-1 text-2xl font-bold text-gray-900">£ 1,389</p>
-                    <p className="text-xs text-gray-500">Average: £348 per day</p>
+                    <p className="mt-1 text-2xl font-bold text-gray-900">£ {weeklyStats.totalRevenue.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500">Average: £{weeklyStats.avgRevenuePerDay} per day</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Total Customer (This week)</p>
-                    <p className="mt-1 text-2xl font-bold text-gray-900">31</p>
-                    <p className="text-xs text-gray-500">Average: 10 per day</p>
+                    <p className="mt-1 text-2xl font-bold text-gray-900">{weeklyStats.totalCustomers}</p>
+                    <p className="text-xs text-gray-500">Average: {Math.round(weeklyStats.totalCustomers / 7)} per day</p>
                   </div>
                 </div>
               </div>
