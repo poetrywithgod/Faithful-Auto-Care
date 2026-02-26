@@ -1,6 +1,9 @@
-import { Clock, Award, Shield } from "lucide-react";
+import { Clock, Award, Shield, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export const WhyChooseUsSection = () => {
+  const navigate = useNavigate();
   const reasons = [
     {
       icon: Clock,
@@ -23,36 +26,65 @@ export const WhyChooseUsSection = () => {
   ];
 
   return (
-    <section className="py-16 sm:py-20 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-            Why Choose Us
-          </h2>
-          <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-6 md:px-12 lg:px-24">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Why Choose Us</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
             Experience the difference with our commitment to excellence
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-          {reasons.map((reason, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow"
-            >
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4 sm:mb-6">
-                <reason.icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-              </div>
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          <div className="relative w-full md:w-1/2 flex justify-center">
+            <div className="absolute rounded-xl z-0 w-[280px] sm:w-[391px] h-[280px] sm:h-[383px] bg-[#A8D4F5] rotate-[8deg] transform"></div>
 
-              <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-3 sm:mb-4">
-                {reason.title}
-              </h3>
+            <img
+              src="https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Professional Car Detailing"
+              className="relative z-10 w-full max-w-[280px] sm:max-w-[383px] h-[270px] sm:h-[366px] object-cover rounded-xl shadow-lg"
+            />
 
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                {reason.description}
-              </p>
+            <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-20 w-[120px] sm:w-[136px] h-[60px] sm:h-[67px] bg-[#A8D4F5] rounded-xl flex items-center justify-center gap-2 text-sm font-medium text-black shadow-md">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-left leading-tight text-[10px] sm:text-xs">
+                100%<br />
+                Customer<br />
+                Satisfaction
+              </span>
             </div>
-          ))}
+          </div>
+
+          <div className="w-full md:w-1/2">
+            <h2 className="text-gray-800 text-2xl sm:text-3xl md:text-4xl font-semibold mb-6">
+              Excellence in Every Detail
+            </h2>
+
+            <div className="space-y-6 mb-8">
+              {reasons.map((reason, index) => (
+                <div key={index} className="flex gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                    <reason.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                      {reason.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {reason.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => navigate('/book-now')}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-6 px-8 rounded-lg"
+            >
+              Book Now
+            </Button>
+          </div>
         </div>
       </div>
     </section>
