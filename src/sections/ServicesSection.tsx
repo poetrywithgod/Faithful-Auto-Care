@@ -1,24 +1,27 @@
-import { Wrench, Droplets, Wind } from "lucide-react";
+import { Droplets, Car, Trash2 } from "lucide-react";
 
 export const ServicesSection = () => {
   const services = [
     {
-      icon: Wrench,
+      icon: Droplets,
       title: "Tyre & Rim Care",
       description:
-        "Specialized cleaning and conditioning for tyres and rims, restoring their shine and protecting against wear.",
+        "We remove dirt, brake dust, and grime while applying premium treatments to restore shine and protect surfaces.",
+      image: "https://images.pexels.com/photos/13065690/pexels-photo-13065690.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
     {
-      icon: Droplets,
+      icon: Car,
       title: "Engine Bay Care",
       description:
-        "Thorough cleaning and degreasing of the engine compartment, enhancing performance and extending engine life.",
+        "We carefully remove grease, dirt, and grime using specialized tools and eco-friendly degreasers, ensuring no damage",
+      image: "https://images.pexels.com/photos/4488662/pexels-photo-4488662.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
     {
-      icon: Wind,
+      icon: Trash2,
       title: "Cabin Deep Clean",
       description:
-        "Complete interior detailing including vacuuming, shampooing, and sanitizing for a fresh and healthy cabin.",
+        "We carefully vacuum carpets, seats, and floor mats, wipe dashboards, and clean vents to remove dirt, and allergens",
+      image: "https://images.pexels.com/photos/5247965/pexels-photo-5247965.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
   ];
 
@@ -36,15 +39,24 @@ export const ServicesSection = () => {
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-gray-50 rounded-xl p-6 sm:p-8 hover:shadow-lg transition-shadow"
+              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow"
             >
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
-                <service.icon className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
+              <div className="relative h-48 sm:h-56">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-4 right-4 w-12 h-12 sm:w-14 sm:h-14 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <service.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                </div>
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
-                {service.title}
-              </h3>
-              <p className="text-sm sm:text-base text-gray-600">{service.description}</p>
+              <div className="p-5 sm:p-6">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">
+                  {service.title}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{service.description}</p>
+              </div>
             </div>
           ))}
         </div>
