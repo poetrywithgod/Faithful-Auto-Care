@@ -26,36 +26,36 @@ export const HowItWorksSection = () => {
   ];
 
   return (
-    <section id="process" className="py-20 bg-white">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">
+    <section id="process" className="py-16 sm:py-20 bg-white">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
             How It Works
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
             Three simple steps to a pristine vehicle
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10">
           {steps.map((step, index) => (
             <div
               key={index}
-              className="relative flex flex-col items-center text-center p-8"
+              className="relative flex flex-col items-center text-center p-6 sm:p-8"
             >
-              <div className="absolute top-0 right-0 text-6xl font-bold text-gray-100">
+              <div className="absolute top-0 right-2 sm:right-0 text-5xl sm:text-6xl font-bold text-gray-100">
                 {step.number}
               </div>
 
-              <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mb-6 relative z-10">
-                <step.icon className="w-10 h-10 text-white" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-600 rounded-full flex items-center justify-center mb-4 sm:mb-6 relative z-10">
+                <step.icon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
 
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+              <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-3 sm:mb-4">
                 {step.title}
               </h3>
 
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                 {step.description}
               </p>
             </div>
