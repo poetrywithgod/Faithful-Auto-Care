@@ -24,6 +24,18 @@ Faithful Auto Care is a modern car wash booking platform that allows customers t
 - Receive email confirmations
 - View booking history
 
+### Booking System Features
+
+**Multi-Booking Capability:**
+- Each time slot can accommodate up to 3 customers simultaneously
+- Real-time availability tracking shows remaining spots (e.g., "2 spots left")
+- Time slots become unavailable once 3 bookings are reached
+
+**Duplicate Prevention:**
+- Customers cannot book the same time slot twice (identified by email)
+- Validation occurs at submission to prevent race conditions
+- Clear error messages guide users to select alternative times
+
 The application also includes an admin dashboard for managing bookings, services, teams, and time slots.
 
 ---
@@ -697,7 +709,9 @@ src/
        └─► Show booking_code, date, time, service, status
 ```
 
-### Time Slot Availability Check
+### Time Slot Availability Check (Multi-Booking System)
+
+**System Capacity:** Each time slot can accommodate up to 3 customers
 
 ```
 User selects date
@@ -710,14 +724,78 @@ User selects date
    │   SELECT booking_time FROM bookings
    │   WHERE booking_date = selectedDate
    │
-   ├─► Response: Array of booked time strings
-   │   Example: ['05:00 AM', '10:00 AM', '02:00 PM']
+   ├─► Response: Array of all bookings for that date
+   │   Example: [
+   │     { booking_time: '05:00 AM' },
+   │     { booking_time: '05:00 AM' },
+   │     { booking_time: '10:00 AM' }
+   │   ]
    │
-   ├─► Component state updated: setBookedTimes(data)
+   ├─► Process bookings:
+   │   │
+   │   ├─► Count bookings per time slot
+   │   │   timeSlotCounts = {
+   │   │     '05:00 AM': 2,    // 1 spot remaining
+   │   │     '10:00 AM': 1,    // 2 spots remaining
+   │   │   }
+   │   │
+   │   └─► Calculate availability:
+   │       - Full (>= 3 bookings): Disabled, grayed out, shows "Full"
+   │       - Partially booked (1-2 bookings): Available, shows "X spots left"
+   │       - Empty (0 bookings): Available, no indicator
+   │
+   ├─► Component state updated: setTimeSlotCounts(counts)
    │
    └─► UI renders:
-       ├─► Available slots: clickable, white background
-       └─► Booked slots: disabled, grayed out, blurred
+       ├─► Full slots (3 bookings):
+       │   - Disabled, grayed out, blurred, shows "Full"
+       ├─► Partially booked slots (1-2 bookings):
+       │   - Clickable, white background, shows "X spots left"
+       └─► Empty slots (0 bookings):
+           - Clickable, white background, no indicator
+```
+
+### Duplicate Booking Prevention
+
+**Rule:** One person cannot book the same time slot twice
+
+```
+User completes booking form and clicks Submit
+   │
+   ├─► DetailsStep component validates
+   │
+   ├─► Check 1 - Duplicate Prevention:
+   │   │
+   │   ├─► Database Query:
+   │   │   SELECT id FROM bookings
+   │   │   WHERE booking_date = selectedDate
+   │   │   AND booking_time = selectedTime
+   │   │   AND customer_email = enteredEmail
+   │   │
+   │   ├─► If booking exists:
+   │   │   └─► Show error: "You have already booked this time slot"
+   │   │   └─► Stop submission
+   │   │
+   │   └─► If no booking found: Continue to Check 2
+   │
+   ├─► Check 2 - Capacity Verification:
+   │   │
+   │   ├─► Database Query:
+   │   │   SELECT id FROM bookings
+   │   │   WHERE booking_date = selectedDate
+   │   │   AND booking_time = selectedTime
+   │   │
+   │   ├─► Count results
+   │   │
+   │   ├─► If count >= 3:
+   │   │   └─► Show error: "This time slot is now full"
+   │   │   └─► Stop submission
+   │   │
+   │   └─► If count < 3: Continue to booking creation
+   │
+   ├─► Create booking with unique code
+   │
+   └─► Send confirmation email
 ```
 
 ### Weekly Analytics Data Flow
@@ -851,7 +929,9 @@ RESEND_API_KEY=your_resend_api_key
 
 | Component | Database Table | Operation | Lines | Purpose |
 |-----------|---------------|-----------|-------|---------|
-| TimeStep.tsx | bookings | SELECT | 34-37 | Fetch booked times for date |
+| TimeStep.tsx | bookings | SELECT | 34-45 | Fetch bookings and count per time slot (max 3 per slot) |
+| DetailsStep.tsx | bookings | SELECT | 87-93 | Check if user already booked this slot (prevent duplicates) |
+| DetailsStep.tsx | bookings | SELECT | 101-105 | Verify slot capacity before booking (enforce 3 max) |
 | DetailsStep.tsx | bookings | INSERT | 46-63 | Create new booking |
 | ViewBookingsPage.tsx | bookings | SELECT | 43-47 | Retrieve user bookings |
 | AdminDashboard.tsx | bookings | SELECT | 73-104 | Fetch all bookings for dashboard stats |

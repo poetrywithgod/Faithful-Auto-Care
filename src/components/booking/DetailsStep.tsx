@@ -84,6 +84,32 @@ export function DetailsStep({
     setError('');
 
     try {
+      const { data: existingBooking } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('booking_date', bookingData.date)
+        .eq('booking_time', bookingData.time)
+        .eq('customer_email', email)
+        .maybeSingle();
+
+      if (existingBooking) {
+        setError('You have already booked this time slot. Please select a different time.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const { data: bookingCount } = await supabase
+        .from('bookings')
+        .select('id', { count: 'exact' })
+        .eq('booking_date', bookingData.date)
+        .eq('booking_time', bookingData.time);
+
+      if (bookingCount && bookingCount.length >= 3) {
+        setError('This time slot is now full. Please select a different time.');
+        setIsSubmitting(false);
+        return;
+      }
+
       const { data, bookingCode } = await createBookingWithUniqueCode();
 
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
