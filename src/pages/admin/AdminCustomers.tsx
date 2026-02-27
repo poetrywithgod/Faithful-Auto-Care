@@ -24,6 +24,17 @@ export const AdminCustomers = () => {
 
   useEffect(() => {
     fetchCustomers();
+
+    const bookingsSubscription = supabase
+      .channel('admin-customers')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+        fetchCustomers();
+      })
+      .subscribe();
+
+    return () => {
+      bookingsSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchCustomers = async () => {
@@ -110,7 +121,7 @@ export const AdminCustomers = () => {
 
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-max">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">

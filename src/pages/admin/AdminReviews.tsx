@@ -24,6 +24,17 @@ export const AdminReviews = () => {
 
   useEffect(() => {
     fetchReviews();
+
+    const reviewsSubscription = supabase
+      .channel('admin-reviews')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
+        fetchReviews();
+      })
+      .subscribe();
+
+    return () => {
+      reviewsSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchReviews = async () => {

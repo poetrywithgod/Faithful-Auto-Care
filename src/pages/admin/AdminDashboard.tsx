@@ -68,6 +68,26 @@ export const AdminDashboard = () => {
   useEffect(() => {
     fetchDashboardData();
     fetchWeeklyAnalytics();
+
+    const bookingsSubscription = supabase
+      .channel('dashboard-bookings')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+        fetchDashboardData();
+        fetchWeeklyAnalytics();
+      })
+      .subscribe();
+
+    const reviewsSubscription = supabase
+      .channel('dashboard-reviews')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
+        fetchDashboardData();
+      })
+      .subscribe();
+
+    return () => {
+      bookingsSubscription.unsubscribe();
+      reviewsSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchDashboardData = async () => {

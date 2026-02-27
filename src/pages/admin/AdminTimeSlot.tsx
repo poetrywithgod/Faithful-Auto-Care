@@ -34,6 +34,33 @@ export const AdminTimeSlot = () => {
     fetchTimeSlots();
     fetchBlockedTimes();
     fetchBookingCounts();
+
+    const timeSlotsSubscription = supabase
+      .channel('admin-time-slots')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'time_slots' }, () => {
+        fetchTimeSlots();
+      })
+      .subscribe();
+
+    const blockedTimesSubscription = supabase
+      .channel('admin-blocked-times')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'blocked_times' }, () => {
+        fetchBlockedTimes();
+      })
+      .subscribe();
+
+    const bookingsSubscription = supabase
+      .channel('admin-timeslot-bookings')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+        fetchBookingCounts();
+      })
+      .subscribe();
+
+    return () => {
+      timeSlotsSubscription.unsubscribe();
+      blockedTimesSubscription.unsubscribe();
+      bookingsSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchTimeSlots = async () => {
@@ -116,15 +143,15 @@ export const AdminTimeSlot = () => {
           </Card>
         </div>
 
-        <Card className="p-4 md:p-6">
+        <Card className="p-4 md:p-6 overflow-hidden">
           <h2 className="text-base md:text-lg font-semibold text-gray-900 mb-4">Operation Hours / Capacity</h2>
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-x-auto">
             {timeSlots.map((slot) => {
               const booked = bookingCounts[slot.day_of_week] || 0;
               const percentage = slot.capacity > 0 ? (booked / slot.capacity) * 100 : 0;
 
               return (
-                <div key={slot.id} className="flex items-center gap-4">
+                <div key={slot.id} className="flex items-center gap-4 min-w-max">
                   <div className="w-24">
                     <p className="text-sm font-medium text-gray-900">{slot.day_of_week}</p>
                   </div>
@@ -172,23 +199,23 @@ export const AdminTimeSlot = () => {
           </div>
         </Card>
 
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Blocked Service</h2>
+        <Card className="p-4 md:p-6 overflow-hidden">
+          <div className="flex items-center justify-between mb-4 gap-4">
+            <h2 className="text-base md:text-lg font-semibold text-gray-900 whitespace-nowrap">Blocked Service</h2>
             <Button
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
               onClick={() => setShowBlockModal(true)}
             >
               <Plus className="mr-2 h-4 w-4" />
               Add Blocked Time
             </Button>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3 overflow-x-auto">
             {blockedTimes.map((blocked) => (
               <div
                 key={blocked.id}
-                className="flex items-center justify-between rounded-lg border p-4"
+                className="flex items-center justify-between rounded-lg border p-4 min-w-max"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">⛔</span>

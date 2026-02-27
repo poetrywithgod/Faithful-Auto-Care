@@ -27,6 +27,17 @@ export const AdminTeams = () => {
 
   useEffect(() => {
     fetchTeamMembers();
+
+    const teamMembersSubscription = supabase
+      .channel('admin-team-members')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => {
+        fetchTeamMembers();
+      })
+      .subscribe();
+
+    return () => {
+      teamMembersSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchTeamMembers = async () => {
@@ -124,7 +135,7 @@ export const AdminTeams = () => {
 
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-max">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">

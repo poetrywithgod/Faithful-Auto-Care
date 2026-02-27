@@ -21,6 +21,17 @@ export const AdminServices = () => {
 
   useEffect(() => {
     fetchServices();
+
+    const servicesSubscription = supabase
+      .channel('admin-services')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, () => {
+        fetchServices();
+      })
+      .subscribe();
+
+    return () => {
+      servicesSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchServices = async () => {
