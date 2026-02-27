@@ -297,7 +297,7 @@ export const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg. Rating</p>
-                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{stats.avgRating}</p>
+                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{stats.avgRating.toFixed(1)}</p>
                 <p className="mt-1 text-xs sm:text-sm text-gray-500">Based on review</p>
               </div>
               <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
@@ -581,7 +581,7 @@ export const AdminDashboard = () => {
                   <Star className="h-8 w-8 text-yellow-600" />
                 </div>
                 <p className="mt-4 text-sm font-medium text-gray-600">Customer Satisfaction</p>
-                <p className="mt-2 text-4xl font-bold text-gray-900">{stats.satisfaction}/5</p>
+                <p className="mt-2 text-4xl font-bold text-gray-900">{stats.satisfaction.toFixed(1)}/5</p>
                 <p className="mt-1 text-sm text-green-600">+0.2% (30 days)</p>
               </div>
             </Card>
