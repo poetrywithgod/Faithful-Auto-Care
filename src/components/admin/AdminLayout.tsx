@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, Calendar, Clock, Users, Settings as SettingsIcon, Star, UserCog, LogOut, ChevronLeft, Bell, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface AdminLayoutProps {
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { adminData, signOut } = useAdminAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -129,8 +131,9 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
               {!isCollapsed && <span>Settings</span>}
             </button>
             <button
-              onClick={() => {
-                navigate("/");
+              onClick={async () => {
+                await signOut();
+                navigate("/admin/signin");
                 setIsMobileMenuOpen(false);
               }}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-gray-300 hover:bg-blue-800 hover:text-white transition-colors"
@@ -171,11 +174,15 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
             </button>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-sm font-semibold text-blue-600">FC</span>
+                <span className="text-sm font-semibold text-blue-600">
+                  {adminData?.full_name?.charAt(0) || 'A'}
+                </span>
               </div>
-              <div className="text-left">
-                <div className="text-sm font-semibold text-gray-900">Faithful Care</div>
-                <div className="text-xs text-gray-500">Admin</div>
+              <div className="text-left hidden sm:block">
+                <div className="text-sm font-semibold text-gray-900">
+                  {adminData?.full_name || 'Admin'}
+                </div>
+                <div className="text-xs text-gray-500">{adminData?.role || 'Admin'}</div>
               </div>
             </div>
           </div>
