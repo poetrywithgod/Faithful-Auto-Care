@@ -121,10 +121,6 @@ export const AdminReviews = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Reviews</h1>
             <p className="mt-1 text-sm md:text-base text-gray-600">Approve, Delete & Manage Reviews</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Service
-          </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
