@@ -99,6 +99,15 @@
     }
   }
 
+  @keyframes scroll-horizontal {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
   .animate-fadeIn {
     animation: fadeIn 0.6s ease-out forwards;
   }
@@ -121,6 +130,10 @@
 
   .animate-float {
     animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-scroll-horizontal {
+    animation: scroll-horizontal 40s linear infinite;
   }
 
   .animation-delay-200 {
