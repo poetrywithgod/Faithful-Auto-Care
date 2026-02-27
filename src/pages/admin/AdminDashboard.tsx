@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Euro, Users, TrendingUp, AlertTriangle, Clock, CheckCircle, AlertCircle, Star, Phone } from "lucide-react";
+import { Dialog } from "@/components/ui/dialog";
+import { Calendar, Euro, Users, TrendingUp, AlertTriangle, Clock, CheckCircle, AlertCircle, Star, Phone, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface Stats {
@@ -45,6 +47,7 @@ interface WeeklyStats {
 }
 
 export const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<Stats>({
     totalBookings: 0,
     revenue: 0,
@@ -56,6 +59,9 @@ export const AdminDashboard = () => {
   });
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [activeTab, setActiveTab] = useState("appointments");
+  const [dateFilter, setDateFilter] = useState<"today" | "week" | "month">("month");
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [pendingReviews, setPendingReviews] = useState(0);
   const [weeklyStats, setWeeklyStats] = useState<WeeklyStats>({
     dailyData: [],
     totalBookings: 0,
@@ -68,6 +74,7 @@ export const AdminDashboard = () => {
   useEffect(() => {
     fetchDashboardData();
     fetchWeeklyAnalytics();
+    fetchPendingReviews();
 
     const bookingsSubscription = supabase
       .channel('dashboard-bookings')
@@ -81,6 +88,7 @@ export const AdminDashboard = () => {
       .channel('dashboard-reviews')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
         fetchDashboardData();
+        fetchPendingReviews();
       })
       .subscribe();
 
@@ -90,8 +98,34 @@ export const AdminDashboard = () => {
     };
   }, []);
 
+  useEffect(() => {
+    fetchDashboardData();
+  }, [dateFilter]);
+
+  const getDateRange = () => {
+    const today = new Date();
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+
+    if (dateFilter === "today") {
+      return { start: startOfToday.toISOString().split('T')[0], end: startOfToday.toISOString().split('T')[0] };
+    } else if (dateFilter === "week") {
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - 6);
+      return { start: startOfWeek.toISOString().split('T')[0], end: new Date().toISOString().split('T')[0] };
+    } else {
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      return { start: startOfMonth.toISOString().split('T')[0], end: new Date().toISOString().split('T')[0] };
+    }
+  };
+
   const fetchDashboardData = async () => {
-    const { data: bookings } = await supabase.from("bookings").select("*");
+    const { start, end } = getDateRange();
+
+    const { data: bookings } = await supabase
+      .from("bookings")
+      .select("*")
+      .gte("booking_date", start)
+      .lte("booking_date", end);
 
     const { data: reviews } = await supabase
       .from("reviews")
@@ -119,8 +153,21 @@ export const AdminDashboard = () => {
         satisfaction: avgRating,
       });
 
-      setUpcomingBookings(bookings.slice(0, 3) as Booking[]);
+      const upcoming = bookings
+        .filter(b => b.status === "confirmed")
+        .sort((a, b) => new Date(a.booking_date + ' ' + a.booking_time).getTime() - new Date(b.booking_date + ' ' + b.booking_time).getTime())
+        .slice(0, 3);
+      setUpcomingBookings(upcoming as Booking[]);
     }
+  };
+
+  const fetchPendingReviews = async () => {
+    const { data, count } = await supabase
+      .from("reviews")
+      .select("*", { count: 'exact', head: true })
+      .eq("status", "pending");
+
+    setPendingReviews(count || 0);
   };
 
   const fetchWeeklyAnalytics = async () => {
@@ -177,9 +224,30 @@ export const AdminDashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
           <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
-            <Button variant="outline" size="sm" className="whitespace-nowrap">Today</Button>
-            <Button variant="outline" size="sm" className="whitespace-nowrap">This Week</Button>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap">This Month</Button>
+            <Button
+              variant={dateFilter === "today" ? "default" : "outline"}
+              size="sm"
+              className="whitespace-nowrap"
+              onClick={() => setDateFilter("today")}
+            >
+              Today
+            </Button>
+            <Button
+              variant={dateFilter === "week" ? "default" : "outline"}
+              size="sm"
+              className="whitespace-nowrap"
+              onClick={() => setDateFilter("week")}
+            >
+              This Week
+            </Button>
+            <Button
+              variant={dateFilter === "month" ? "default" : "outline"}
+              size="sm"
+              className="whitespace-nowrap"
+              onClick={() => setDateFilter("month")}
+            >
+              This Month
+            </Button>
           </div>
         </div>
 
@@ -240,23 +308,28 @@ export const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <Card className="bg-yellow-50 p-6 border-yellow-200">
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+          {pendingReviews > 0 && (
+            <Card className="bg-yellow-50 p-6 border-yellow-200">
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">Customer Review</h3>
+                  <p className="mt-1 text-sm text-gray-700">
+                    You have {pendingReviews} customer review{pendingReviews > 1 ? 's' : ''} pending and waiting for your approval
+                  </p>
+                  <Button
+                    size="sm"
+                    className="mt-3 bg-yellow-600 hover:bg-yellow-700"
+                    onClick={() => navigate('/admin/reviews')}
+                  >
+                    Action required
+                  </Button>
+                </div>
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Customer Review</h3>
-                <p className="mt-1 text-sm text-gray-700">
-                  You have 3 customers review, pending and waiting for your approval
-                </p>
-                <p className="mt-1 text-xs text-gray-500">2 hours ago</p>
-                <Button size="sm" className="mt-3 bg-yellow-600 hover:bg-yellow-700">
-                  Action required
-                </Button>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           <Card className="bg-red-50 p-6 border-red-200">
             <div className="flex items-start gap-4">
@@ -368,7 +441,11 @@ export const AdminDashboard = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-gray-900">£ {booking.service_price}</p>
-                      <Button size="sm" className="mt-2 bg-blue-600 hover:bg-blue-700">
+                      <Button
+                        size="sm"
+                        className="mt-2 bg-blue-600 hover:bg-blue-700"
+                        onClick={() => setSelectedBooking(booking)}
+                      >
                         View Details
                       </Button>
                     </div>
@@ -511,6 +588,84 @@ export const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {selectedBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white">
+              <h3 className="text-xl font-bold text-gray-900">Booking Details</h3>
+              <button
+                onClick={() => setSelectedBooking(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm text-gray-500">Customer Name</p>
+                  <p className="font-semibold text-gray-900">{selectedBooking.customer_name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="font-semibold text-gray-900">{selectedBooking.customer_email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Phone</p>
+                  <p className="font-semibold text-gray-900">{selectedBooking.customer_phone}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Booking Date</p>
+                  <p className="font-semibold text-gray-900">{new Date(selectedBooking.booking_date).toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Time</p>
+                  <p className="font-semibold text-gray-900">{selectedBooking.booking_time}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Service Type</p>
+                  <p className="font-semibold text-gray-900">{selectedBooking.service_type}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Vehicle Type</p>
+                  <p className="font-semibold text-gray-900">{selectedBooking.vehicle_type}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Price</p>
+                  <p className="font-semibold text-gray-900 text-xl">£{selectedBooking.service_price}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Status</p>
+                  <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${
+                    selectedBooking.status === "confirmed" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                  }`}>
+                    {selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1)}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Booking Code</p>
+                  <p className="font-semibold text-gray-900">{selectedBooking.id.slice(0, 8).toUpperCase()}</p>
+                </div>
+              </div>
+              <div className="flex gap-2 justify-end border-t pt-4 mt-6">
+                <Button variant="outline" onClick={() => setSelectedBooking(null)}>
+                  Close
+                </Button>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => {
+                    navigate('/admin/bookings');
+                    setSelectedBooking(null);
+                  }}
+                >
+                  View in Bookings
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };
