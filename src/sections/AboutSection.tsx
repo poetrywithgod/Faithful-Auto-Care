@@ -1,13 +1,18 @@
 import { Car } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 export const AboutSection = () => {
   const navigate = useNavigate();
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
+  const { ref: imageRef, isVisible: imageVisible } = useScrollAnimation();
+  const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation();
+
   return (
     <section id="about" className="py-16 bg-gray-50">
       <div className="container mx-auto px-6 md:px-12 lg:px-24">
-        <div className="text-center mb-12 opacity-0 animate-slideUp">
+        <div ref={titleRef} className={`text-center mb-12 transition-all duration-700 ${titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">About Us</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Your trusted partner in professional car care
@@ -15,7 +20,7 @@ export const AboutSection = () => {
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-12">
-          <div className="relative w-full md:w-1/2 flex justify-center opacity-0 animate-slideInLeft animation-delay-200">
+          <div ref={imageRef} className={`relative w-full md:w-1/2 flex justify-center transition-all duration-700 delay-200 ${imageVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
             <div className="absolute rounded-xl z-0 w-[280px] sm:w-[391px] h-[280px] sm:h-[383px] bg-[#A8D4F5] rotate-[8deg] transform"></div>
 
             <img
@@ -34,7 +39,7 @@ export const AboutSection = () => {
             </div>
           </div>
 
-          <div className="w-full md:w-1/2 opacity-0 animate-slideInRight animation-delay-300">
+          <div ref={contentRef} className={`w-full md:w-1/2 transition-all duration-700 delay-300 ${contentVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
             <h2 className="text-gray-800 text-2xl sm:text-3xl md:text-4xl font-semibold mb-4">
               Professional Car Care You Can Trust
             </h2>

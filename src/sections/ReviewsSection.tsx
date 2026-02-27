@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 interface Review {
   id: string;
@@ -15,6 +16,7 @@ interface Review {
 export const ReviewsSection = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
 
   useEffect(() => {
     fetchReviews();
@@ -67,7 +69,7 @@ export const ReviewsSection = () => {
   return (
     <section className="py-16 sm:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16 opacity-0 animate-slideUp">
+        <div ref={titleRef} className={`text-center mb-12 sm:mb-16 transition-all duration-700 ${titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
             What Our Customers Say
           </h2>
@@ -77,35 +79,47 @@ export const ReviewsSection = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-          {reviews.map((review, index) => (
-            <Card key={review.id} className={`bg-gray-50 border-none shadow-lg opacity-0 animate-scaleIn animation-delay-${(index + 1) * 200} hover:scale-105 transition-transform`}>
-              <CardContent className="p-6 sm:p-8">
-                <Quote className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mb-3 sm:mb-4 opacity-50" />
+          {reviews.map((review, index) => {
+            const ReviewCard = () => {
+              const { ref, isVisible } = useScrollAnimation();
+              return (
+                <Card
+                  key={review.id}
+                  ref={ref}
+                  className={`bg-gray-50 border-none shadow-lg transition-all duration-700 hover:scale-105 hover:shadow-2xl ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
+                  <CardContent className="p-6 sm:p-8">
+                    <Quote className={`w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mb-3 sm:mb-4 transition-all duration-500 ${isVisible ? 'opacity-50 rotate-0' : 'opacity-0 -rotate-12'}`} />
 
-                <div className="flex gap-1 mb-3 sm:mb-4">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
+                    <div className="flex gap-1 mb-3 sm:mb-4">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400 transition-all duration-500 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                          style={{ transitionDelay: `${(index * 100) + (i * 50)}ms` }}
+                        />
+                      ))}
+                    </div>
 
-                <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed">
-                  "{review.comment}"
-                </p>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-gray-800">
-                      {review.customer_name}
+                    <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed">
+                      "{review.comment}"
                     </p>
-                    <p className="text-sm text-gray-500">{getTimeAgo(review.created_at)}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {review.customer_name}
+                        </p>
+                        <p className="text-sm text-gray-500">{getTimeAgo(review.created_at)}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            };
+            return <ReviewCard key={review.id} />;
+          })}
         </div>
       </div>
     </section>
