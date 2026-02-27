@@ -171,7 +171,7 @@ export const HeroSection = () => {
         className="relative flex min-h-screen w-full items-center overflow-hidden"
       >
         <img
-          src="/washing.pg"
+          src="/washing.png"
           alt="Car wash background"
           className="absolute inset-0 w-full h-full object-cover"
         />
