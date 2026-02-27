@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, AlertCircle } from 'lucide-react';
 
 export default function AdminSignUp() {
   const navigate = useNavigate();
@@ -18,6 +18,30 @@ export default function AdminSignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [signupEnabled, setSignupEnabled] = useState(true);
+  const [checkingSettings, setCheckingSettings] = useState(true);
+
+  useEffect(() => {
+    checkSignupStatus();
+  }, []);
+
+  const checkSignupStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('setting_value')
+        .eq('setting_key', 'signup_enabled')
+        .maybeSingle();
+
+      if (data) {
+        setSignupEnabled(data.setting_value);
+      }
+    } catch (err) {
+      console.error('Error checking signup status:', err);
+    } finally {
+      setCheckingSettings(false);
+    }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,6 +113,22 @@ export default function AdminSignUp() {
 
           <Card className="p-8">
             <form className="space-y-6" onSubmit={handleSignUp}>
+              {!signupEnabled && (
+                <div className="rounded-md bg-yellow-50 border border-yellow-200 p-4">
+                  <div className="flex items-start">
+                    <AlertCircle className="h-5 w-5 text-yellow-600 mr-3 mt-0.5" />
+                    <div>
+                      <h3 className="text-sm font-semibold text-yellow-800 mb-1">
+                        Signup Disabled
+                      </h3>
+                      <p className="text-sm text-yellow-700">
+                        New admin account creation is currently disabled. Please contact an existing administrator to enable signup or create an account for you.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {error && (
                 <div className="rounded-md bg-red-50 p-4">
                   <p className="text-sm text-red-800">{error}</p>
@@ -108,6 +148,7 @@ export default function AdminSignUp() {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     required
+                    disabled={!signupEnabled}
                     className="pl-10"
                   />
                 </div>
@@ -126,6 +167,7 @@ export default function AdminSignUp() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
+                    disabled={!signupEnabled}
                     className="pl-10"
                   />
                 </div>
@@ -144,11 +186,13 @@ export default function AdminSignUp() {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
+                    disabled={!signupEnabled}
                     className="pl-10 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={!signupEnabled}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2"
                   >
                     {showPassword ? (
@@ -173,11 +217,13 @@ export default function AdminSignUp() {
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     required
+                    disabled={!signupEnabled}
                     className="pl-10 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    disabled={!signupEnabled}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2"
                   >
                     {showConfirmPassword ? (
@@ -192,7 +238,7 @@ export default function AdminSignUp() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={loading}
+                disabled={loading || !signupEnabled}
               >
                 {loading ? 'Creating account...' : 'Create Account'}
               </Button>
