@@ -112,6 +112,16 @@ export function DetailsStep({
 
       const { data, bookingCode } = await createBookingWithUniqueCode();
 
+      await supabase.from('notifications').insert([
+        {
+          title: 'New Booking Received',
+          message: `${name} booked ${bookingData.serviceType} for ${bookingData.vehicleType} on ${bookingData.date} at ${bookingData.time}`,
+          type: 'booking',
+          booking_id: data.id,
+          is_read: false
+        }
+      ]);
+
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 

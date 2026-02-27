@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AlertDialog } from "@/components/ui/dialog";
 import { Search, Filter, Star, Check, X, Trash2, Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -21,6 +22,20 @@ export const AdminReviews = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, avgRating: 0 });
+  const [alertDialog, setAlertDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "info" | "error" | "warning" | "success";
+    showCancel: boolean;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    showCancel: false,
+  });
 
   useEffect(() => {
     fetchReviews();
@@ -68,9 +83,18 @@ export const AdminReviews = () => {
     fetchReviews();
   };
 
-  const handleDelete = async (id: string) => {
-    await supabase.from("reviews").delete().eq("id", id);
-    fetchReviews();
+  const handleDelete = (id: string) => {
+    setAlertDialog({
+      isOpen: true,
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this review? This action cannot be undone.",
+      type: "warning",
+      showCancel: true,
+      onConfirm: async () => {
+        await supabase.from("reviews").delete().eq("id", id);
+        fetchReviews();
+      },
+    });
   };
 
   const filteredReviews = reviews.filter((review) => {
@@ -207,6 +231,16 @@ export const AdminReviews = () => {
             </Card>
           ))}
         </div>
+
+        <AlertDialog
+          isOpen={alertDialog.isOpen}
+          onClose={() => setAlertDialog({ ...alertDialog, isOpen: false })}
+          onConfirm={alertDialog.onConfirm}
+          title={alertDialog.title}
+          message={alertDialog.message}
+          type={alertDialog.type}
+          showCancel={alertDialog.showCancel}
+        />
       </div>
     </AdminLayout>
   );

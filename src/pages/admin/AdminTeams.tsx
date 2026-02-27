@@ -3,7 +3,8 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, MoreVertical, Plus } from "lucide-react";
+import { AlertDialog } from "@/components/ui/dialog";
+import { Search, Filter, MoreVertical, Plus, Edit, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface TeamMember {
@@ -18,12 +19,44 @@ interface TeamMember {
   status: string;
 }
 
+interface TeamMemberFormData {
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  status: string;
+}
+
 export const AdminTeams = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [stats, setStats] = useState({ total: 0, active: 0, technicians: 0, bookingOfficers: 0 });
   const [topPerformers, setTopPerformers] = useState<{ name: string; bookings: number; revenue: number }[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
+  const [formData, setFormData] = useState<TeamMemberFormData>({
+    name: "",
+    email: "",
+    phone: "",
+    role: "Technician",
+    status: "active"
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alertDialog, setAlertDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "info" | "error" | "warning" | "success";
+    showCancel: boolean;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    showCancel: false,
+  });
 
   useEffect(() => {
     fetchTeamMembers();
@@ -73,6 +106,126 @@ export const AdminTeams = () => {
     return matchesSearch && matchesStatus;
   });
 
+  const openAddModal = () => {
+    setEditingMember(null);
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      role: "Technician",
+      status: "active"
+    });
+    setShowModal(true);
+  };
+
+  const openEditModal = (member: TeamMember) => {
+    setEditingMember(member);
+    setFormData({
+      name: member.name,
+      email: member.email,
+      phone: member.phone,
+      role: member.role,
+      status: member.status
+    });
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingMember(null);
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      role: "Technician",
+      status: "active"
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      if (editingMember) {
+        const { error } = await supabase
+          .from("team_members")
+          .update({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            role: formData.role,
+            status: formData.status,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", editingMember.id);
+
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("team_members")
+          .insert([
+            {
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              role: formData.role,
+              status: formData.status,
+              date_joined: new Date().toISOString().split('T')[0],
+              services_completed: 0,
+              rating: 0
+            }
+          ]);
+
+        if (error) throw error;
+      }
+
+      closeModal();
+      fetchTeamMembers();
+    } catch (error) {
+      console.error("Error saving team member:", error);
+      setAlertDialog({
+        isOpen: true,
+        title: "Error",
+        message: "Failed to save team member. Please try again.",
+        type: "error",
+        showCancel: false,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    setAlertDialog({
+      isOpen: true,
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this team member? This action cannot be undone.",
+      type: "warning",
+      showCancel: true,
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase
+            .from("team_members")
+            .delete()
+            .eq("id", id);
+
+          if (error) throw error;
+          fetchTeamMembers();
+        } catch (error) {
+          console.error("Error deleting team member:", error);
+          setAlertDialog({
+            isOpen: true,
+            title: "Error",
+            message: "Failed to delete team member. Please try again.",
+            type: "error",
+            showCancel: false,
+          });
+        }
+      },
+    });
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-4 md:space-y-6">
@@ -81,7 +234,7 @@ export const AdminTeams = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Team Management</h1>
             <p className="mt-1 text-sm md:text-base text-gray-600">Manage team member & assign roles</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+          <Button onClick={openAddModal} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add Member
           </Button>
@@ -198,9 +351,22 @@ export const AdminTeams = () => {
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                      <button className="text-gray-400 hover:text-gray-600">
-                        <MoreVertical className="h-5 w-5" />
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openEditModal(member)}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Edit"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(member.id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -227,6 +393,130 @@ export const AdminTeams = () => {
             ))}
           </div>
         </div>
+
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b">
+                <h3 className="text-xl font-bold text-gray-900">
+                  {editingMember ? "Edit Team Member" : "Add Team Member"}
+                </h3>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600"
+                  disabled={isSubmitting}
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name
+                  </label>
+                  <Input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    placeholder="Enter team member name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    placeholder="Enter email address"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone
+                  </label>
+                  <Input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    disabled={isSubmitting}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Role
+                  </label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isSubmitting}
+                    required
+                  >
+                    <option value="Technician">Technician</option>
+                    <option value="Booking Officer">Booking Officer</option>
+                    <option value="Manager">Manager</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={isSubmitting}
+                    required
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    onClick={closeModal}
+                    variant="outline"
+                    className="flex-1"
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Saving..." : editingMember ? "Update" : "Add Member"}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        <AlertDialog
+          isOpen={alertDialog.isOpen}
+          onClose={() => setAlertDialog({ ...alertDialog, isOpen: false })}
+          onConfirm={alertDialog.onConfirm}
+          title={alertDialog.title}
+          message={alertDialog.message}
+          type={alertDialog.type}
+          showCancel={alertDialog.showCancel}
+        />
       </div>
     </AdminLayout>
   );
