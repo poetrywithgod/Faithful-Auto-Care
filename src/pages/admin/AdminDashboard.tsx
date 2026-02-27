@@ -15,6 +15,9 @@ interface Stats {
   completionRate: number;
   cancellationRate: number;
   satisfaction: number;
+  bookingsGrowth: number;
+  revenueGrowth: number;
+  customersGrowth: number;
 }
 
 interface Booking {
@@ -56,6 +59,9 @@ export const AdminDashboard = () => {
     completionRate: 0,
     cancellationRate: 0,
     satisfaction: 0,
+    bookingsGrowth: 0,
+    revenueGrowth: 0,
+    customersGrowth: 0,
   });
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
   const [activeTab, setActiveTab] = useState("appointments");
@@ -121,11 +127,28 @@ export const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     const { start, end } = getDateRange();
 
+    // Calculate previous period for comparison
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const periodLength = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const previousStart = new Date(startDate);
+    previousStart.setDate(startDate.getDate() - periodLength);
+    const previousEnd = new Date(startDate);
+    previousEnd.setDate(startDate.getDate() - 1);
+
+    // Fetch current period data
     const { data: bookings } = await supabase
       .from("bookings")
       .select("*")
       .gte("booking_date", start)
       .lte("booking_date", end);
+
+    // Fetch previous period data
+    const { data: previousBookings } = await supabase
+      .from("bookings")
+      .select("*")
+      .gte("booking_date", previousStart.toISOString().split('T')[0])
+      .lte("booking_date", previousEnd.toISOString().split('T')[0]);
 
     const { data: reviews } = await supabase
       .from("reviews")
@@ -139,6 +162,24 @@ export const AdminDashboard = () => {
       const confirmed = bookings.filter(b => b.status === "confirmed").length;
       const cancelled = bookings.filter(b => b.status === "cancelled").length;
 
+      // Calculate previous period stats
+      const prevTotalBookings = previousBookings?.length || 0;
+      const prevRevenue = previousBookings?.reduce((sum, b) => sum + (b.service_price || 0), 0) || 0;
+      const prevUniqueCustomers = previousBookings ? new Set(previousBookings.map(b => b.customer_email)).size : 0;
+
+      // Calculate growth percentages
+      const bookingsGrowth = prevTotalBookings > 0
+        ? Math.round(((totalBookings - prevTotalBookings) / prevTotalBookings) * 1000) / 10
+        : totalBookings > 0 ? 100 : 0;
+
+      const revenueGrowth = prevRevenue > 0
+        ? Math.round(((revenue - prevRevenue) / prevRevenue) * 1000) / 10
+        : revenue > 0 ? 100 : 0;
+
+      const customersGrowth = prevUniqueCustomers > 0
+        ? Math.round(((uniqueCustomers - prevUniqueCustomers) / prevUniqueCustomers) * 1000) / 10
+        : uniqueCustomers > 0 ? 100 : 0;
+
       const avgRating = reviews && reviews.length > 0
         ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
         : 0;
@@ -151,6 +192,9 @@ export const AdminDashboard = () => {
         completionRate: totalBookings > 0 ? Math.round((confirmed / totalBookings) * 100) : 0,
         cancellationRate: totalBookings > 0 ? Math.round((cancelled / totalBookings) * 100) : 0,
         satisfaction: avgRating,
+        bookingsGrowth,
+        revenueGrowth,
+        customersGrowth,
       });
 
       const upcoming = bookings
@@ -259,7 +303,9 @@ export const AdminDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Bookings</p>
                 <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalBookings}</p>
-                <p className="mt-1 text-xs sm:text-sm text-green-600">+9.2% (30 days)</p>
+                <p className={`mt-1 text-xs sm:text-sm ${stats.bookingsGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.bookingsGrowth >= 0 ? '+' : ''}{stats.bookingsGrowth}% vs previous period
+                </p>
               </div>
               <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
                 <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
@@ -272,7 +318,9 @@ export const AdminDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Revenue</p>
                 <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">€{stats.revenue.toLocaleString()}</p>
-                <p className="mt-1 text-xs sm:text-sm text-green-600">+85.2% (30 days)</p>
+                <p className={`mt-1 text-xs sm:text-sm ${stats.revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.revenueGrowth >= 0 ? '+' : ''}{stats.revenueGrowth}% vs previous period
+                </p>
               </div>
               <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
                 <Euro className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
@@ -285,7 +333,9 @@ export const AdminDashboard = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Customer</p>
                 <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalCustomers}</p>
-                <p className="mt-1 text-xs sm:text-sm text-green-600">+46.2% (30 days)</p>
+                <p className={`mt-1 text-xs sm:text-sm ${stats.customersGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stats.customersGrowth >= 0 ? '+' : ''}{stats.customersGrowth}% vs previous period
+                </p>
               </div>
               <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
                 <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
