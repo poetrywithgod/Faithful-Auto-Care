@@ -66,8 +66,10 @@ export const ReviewsSection = () => {
     return null;
   }
 
+  const duplicatedReviews = [...reviews, ...reviews];
+
   return (
-    <section className="py-16 sm:py-20 bg-white">
+    <section className="py-16 sm:py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <div ref={titleRef} className={`text-center mb-12 sm:mb-16 transition-all duration-700 ${titleVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
@@ -78,48 +80,41 @@ export const ReviewsSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-          {reviews.map((review, index) => {
-            const ReviewCard = () => {
-              const { ref, isVisible } = useScrollAnimation();
-              return (
-                <Card
-                  key={review.id}
-                  ref={ref}
-                  className={`bg-gray-50 border-none shadow-lg transition-all duration-700 hover:scale-105 hover:shadow-2xl ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
-                  style={{ transitionDelay: `${index * 100}ms` }}
-                >
-                  <CardContent className="p-6 sm:p-8">
-                    <Quote className={`w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mb-3 sm:mb-4 transition-all duration-500 ${isVisible ? 'opacity-50 rotate-0' : 'opacity-0 -rotate-12'}`} />
+        <div className="relative w-full overflow-hidden">
+          <div className="flex gap-6 animate-scroll-horizontal hover:[animation-play-state:paused]">
+            {duplicatedReviews.map((review, index) => (
+              <Card
+                key={`${review.id}-${index}`}
+                className="bg-gray-50 border-none shadow-lg hover:scale-105 hover:shadow-2xl transition-all duration-300 flex-shrink-0 w-[320px] sm:w-[380px]"
+              >
+                <CardContent className="p-6 sm:p-8">
+                  <Quote className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mb-3 sm:mb-4 opacity-50" />
 
-                    <div className="flex gap-1 mb-3 sm:mb-4">
-                      {[...Array(review.rating)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400 transition-all duration-500 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
-                          style={{ transitionDelay: `${(index * 100) + (i * 50)}ms` }}
-                        />
-                      ))}
+                  <div className="flex gap-1 mb-3 sm:mb-4">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                  </div>
+
+                  <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed line-clamp-4">
+                    "{review.comment}"
+                  </p>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-gray-800">
+                        {review.customer_name}
+                      </p>
+                      <p className="text-sm text-gray-500">{getTimeAgo(review.created_at)}</p>
                     </div>
-
-                    <p className="text-sm sm:text-base text-gray-700 mb-4 sm:mb-6 leading-relaxed">
-                      "{review.comment}"
-                    </p>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-gray-800">
-                          {review.customer_name}
-                        </p>
-                        <p className="text-sm text-gray-500">{getTimeAgo(review.created_at)}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            };
-            return <ReviewCard key={review.id} />;
-          })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </section>
