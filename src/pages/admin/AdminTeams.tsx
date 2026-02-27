@@ -27,6 +27,17 @@ export const AdminTeams = () => {
 
   useEffect(() => {
     fetchTeamMembers();
+
+    const teamMembersSubscription = supabase
+      .channel('admin-team-members')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => {
+        fetchTeamMembers();
+      })
+      .subscribe();
+
+    return () => {
+      teamMembersSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchTeamMembers = async () => {
@@ -64,65 +75,67 @@ export const AdminTeams = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Team Management</h1>
-            <p className="mt-1 text-gray-600">Manage team member & assign roles</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Team Management</h1>
+            <p className="mt-1 text-sm md:text-base text-gray-600">Manage team member & assign roles</p>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add Member
           </Button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
               placeholder="Search by name"
-              className="pl-10"
+              className="pl-10 w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <select
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option>All Status</option>
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4" />
+          <div className="flex gap-2">
+            <select
+              className="flex-1 sm:flex-initial rounded-lg border border-gray-300 px-3 md:px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4" />
           </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-6">
-          <Card className="p-6 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <Card className="p-4 md:p-6 text-center">
             <p className="text-sm font-medium text-gray-600">Total Members</p>
-            <p className="mt-2 text-4xl font-bold text-gray-900">{stats.total}</p>
+            <p className="mt-2 text-3xl md:text-4xl font-bold text-gray-900">{stats.total}</p>
           </Card>
-          <Card className="p-6 text-center">
+          <Card className="p-4 md:p-6 text-center">
             <p className="text-sm font-medium text-gray-600">Active</p>
-            <p className="mt-2 text-4xl font-bold text-green-600">{stats.active}</p>
+            <p className="mt-2 text-3xl md:text-4xl font-bold text-green-600">{stats.active}</p>
           </Card>
-          <Card className="p-6 text-center">
+          <Card className="p-4 md:p-6 text-center">
             <p className="text-sm font-medium text-gray-600">Wash Technician</p>
-            <p className="mt-2 text-4xl font-bold text-gray-900">{stats.technicians}</p>
+            <p className="mt-2 text-3xl md:text-4xl font-bold text-gray-900">{stats.technicians}</p>
           </Card>
-          <Card className="p-6 text-center">
+          <Card className="p-4 md:p-6 text-center">
             <p className="text-sm font-medium text-gray-600">Booking Officer</p>
-            <p className="mt-2 text-4xl font-bold text-gray-900">{stats.bookingOfficers}</p>
+            <p className="mt-2 text-3xl md:text-4xl font-bold text-gray-900">{stats.bookingOfficers}</p>
           </Card>
         </div>
 
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-max">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">

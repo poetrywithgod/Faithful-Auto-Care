@@ -29,7 +29,7 @@ export const ReviewsSection = () => {
   return (
     <section className="py-16 sm:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16">
+        <div className="text-center mb-12 sm:mb-16 opacity-0 animate-slideUp">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
             What Our Customers Say
           </h2>
@@ -40,7 +40,7 @@ export const ReviewsSection = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
           {reviews.map((review, index) => (
-            <Card key={index} className="bg-gray-50 border-none shadow-lg">
+            <Card key={index} className={`bg-gray-50 border-none shadow-lg opacity-0 animate-scaleIn animation-delay-${(index + 1) * 200} hover:scale-105 transition-transform`}>
               <CardContent className="p-6 sm:p-8">
                 <Quote className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 mb-3 sm:mb-4 opacity-50" />
 

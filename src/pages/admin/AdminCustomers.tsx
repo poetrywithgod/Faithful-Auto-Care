@@ -24,6 +24,17 @@ export const AdminCustomers = () => {
 
   useEffect(() => {
     fetchCustomers();
+
+    const bookingsSubscription = supabase
+      .channel('admin-customers')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+        fetchCustomers();
+      })
+      .subscribe();
+
+    return () => {
+      bookingsSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchCustomers = async () => {
@@ -78,35 +89,39 @@ export const AdminCustomers = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-gray-900">Customer Database</h1>
-        <p className="text-gray-600">View customer profiles and bookings</p>
+      <div className="space-y-4 md:space-y-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Customer Database</h1>
+          <p className="text-sm md:text-base text-gray-600">View customer profiles and bookings</p>
+        </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
-              placeholder="Search by name or email address"
-              className="pl-10"
+              placeholder="Search by name or email"
+              className="pl-10 w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <select className="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option>All Types</option>
-          </select>
-          <select className="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option>All Status</option>
-          </select>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-2">
+            <select className="flex-1 sm:flex-initial rounded-lg border border-gray-300 px-3 md:px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option>All Types</option>
+            </select>
+            <select className="flex-1 sm:flex-initial rounded-lg border border-gray-300 px-3 md:px-4 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option>All Status</option>
+            </select>
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-max">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -179,18 +194,18 @@ export const AdminCustomers = () => {
         </Card>
 
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Top Customers</h2>
-          <div className="space-y-4">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Top Customers</h2>
+          <div className="space-y-3 md:space-y-4">
             {topCustomers.map((customer, index) => (
-              <Card key={index} className="p-6 bg-blue-50">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
+              <Card key={index} className="p-4 md:p-6 bg-blue-50">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate">
                       #{index + 1} {customer.name}
                     </h3>
-                    <p className="text-sm text-gray-600">{customer.bookings} Bookings</p>
+                    <p className="text-xs md:text-sm text-gray-600">{customer.bookings} Bookings</p>
                   </div>
-                  <p className="text-2xl font-bold text-blue-600">€{customer.spent}</p>
+                  <p className="text-xl md:text-2xl font-bold text-blue-600 whitespace-nowrap">€{customer.spent}</p>
                 </div>
               </Card>
             ))}

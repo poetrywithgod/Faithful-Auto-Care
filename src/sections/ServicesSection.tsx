@@ -28,7 +28,7 @@ export const ServicesSection = () => {
   return (
     <section id="services" className="py-16 sm:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 opacity-0 animate-slideUp">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Our Services</h2>
           <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
             Professional car care services tailored to your needs
@@ -39,7 +39,7 @@ export const ServicesSection = () => {
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow"
+              className={`bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all hover:scale-105 opacity-0 animate-scaleIn animation-delay-${(index + 1) * 200}`}
             >
               <div className="relative h-48 sm:h-56">
                 <img

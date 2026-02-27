@@ -28,7 +28,7 @@ export const HowItWorksSection = () => {
   return (
     <section id="process" className="py-16 sm:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16">
+        <div className="text-center mb-12 sm:mb-16 opacity-0 animate-slideUp">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
             How It Works
           </h2>
@@ -41,7 +41,7 @@ export const HowItWorksSection = () => {
           {steps.map((step, index) => (
             <div
               key={index}
-              className="relative flex flex-col items-center text-center p-6 sm:p-8"
+              className={`relative flex flex-col items-center text-center p-6 sm:p-8 opacity-0 animate-slideUp animation-delay-${(index + 1) * 200}`}
             >
               <div className="absolute top-0 right-2 sm:right-0 text-5xl sm:text-6xl font-bold text-gray-100">
                 {step.number}

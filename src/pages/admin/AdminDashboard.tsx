@@ -68,6 +68,26 @@ export const AdminDashboard = () => {
   useEffect(() => {
     fetchDashboardData();
     fetchWeeklyAnalytics();
+
+    const bookingsSubscription = supabase
+      .channel('dashboard-bookings')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+        fetchDashboardData();
+        fetchWeeklyAnalytics();
+      })
+      .subscribe();
+
+    const reviewsSubscription = supabase
+      .channel('dashboard-reviews')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
+        fetchDashboardData();
+      })
+      .subscribe();
+
+    return () => {
+      bookingsSubscription.unsubscribe();
+      reviewsSubscription.unsubscribe();
+    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -153,67 +173,67 @@ export const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">Today</Button>
-            <Button variant="outline" size="sm">This Week</Button>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">This Month</Button>
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+            <Button variant="outline" size="sm" className="whitespace-nowrap">Today</Button>
+            <Button variant="outline" size="sm" className="whitespace-nowrap">This Week</Button>
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap">This Month</Button>
           </div>
         </div>
 
-        <p className="text-gray-600">Welcome back! Here is your business review</p>
+        <p className="text-sm md:text-base text-gray-600">Welcome back! Here is your business review</p>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="p-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalBookings}</p>
-                <p className="mt-1 text-sm text-green-600">+9.2% (30 days)</p>
+                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalBookings}</p>
+                <p className="mt-1 text-xs sm:text-sm text-green-600">+9.2% (30 days)</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Calendar className="h-6 w-6 text-blue-600" />
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
+                <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Revenue</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">€{stats.revenue.toLocaleString()}</p>
-                <p className="mt-1 text-sm text-green-600">+85.2% (30 days)</p>
+                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">€{stats.revenue.toLocaleString()}</p>
+                <p className="mt-1 text-xs sm:text-sm text-green-600">+85.2% (30 days)</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Euro className="h-6 w-6 text-blue-600" />
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
+                <Euro className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Customer</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalCustomers}</p>
-                <p className="mt-1 text-sm text-green-600">+46.2% (30 days)</p>
+                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{stats.totalCustomers}</p>
+                <p className="mt-1 text-xs sm:text-sm text-green-600">+46.2% (30 days)</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Users className="h-6 w-6 text-blue-600" />
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Avg. Rating</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.avgRating}</p>
-                <p className="mt-1 text-sm text-gray-500">Based on review</p>
+                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">{stats.avgRating}</p>
+                <p className="mt-1 text-xs sm:text-sm text-gray-500">Based on review</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <TrendingUp className="h-6 w-6 text-blue-600" />
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-blue-100">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
               </div>
             </div>
           </Card>

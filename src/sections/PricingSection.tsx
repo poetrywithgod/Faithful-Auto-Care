@@ -38,7 +38,7 @@ export const PricingSection = () => {
   return (
     <section id="pricing" className="py-16 sm:py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 opacity-0 animate-slideUp">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Our Pricing</h2>
           <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
             Choose the perfect package for your vehicle
@@ -49,7 +49,7 @@ export const PricingSection = () => {
           {services.map((service, index) => (
             <Card
               key={service.id}
-              className={`w-full max-w-[320px] bg-white rounded-xl shadow-lg ${
+              className={`w-full max-w-[320px] bg-white rounded-xl shadow-lg opacity-0 animate-scaleIn animation-delay-${(index + 1) * 200} hover:scale-105 transition-transform ${
                 index === 1 ? "ring-2 ring-blue-600" : ""
               }`}
             >
