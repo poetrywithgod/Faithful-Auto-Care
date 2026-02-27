@@ -3,6 +3,7 @@ import { Mail, Plus, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { supabase } from '../../lib/supabase';
+import { AdminLayout } from '../../components/admin/AdminLayout';
 
 interface AdminNotification {
   id: string;
@@ -122,14 +123,17 @@ export function AdminNotifications() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading...</div>
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <AdminLayout>
+      <div className="space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">Email Notifications</h2>
@@ -304,6 +308,7 @@ export function AdminNotifications() {
           </Button>
         </div>
       )}
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
