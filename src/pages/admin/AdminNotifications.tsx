@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Mail, Plus, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { AlertDialog } from '../../components/ui/dialog';
 import { supabase } from '../../lib/supabase';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 
@@ -21,6 +22,20 @@ export function AdminNotifications() {
   const [newAdmin, setNewAdmin] = useState({ name: '', email: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [alertDialog, setAlertDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "info" | "error" | "warning" | "success";
+    showCancel: boolean;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    showCancel: false,
+  });
 
   useEffect(() => {
     fetchAdmins();
@@ -104,21 +119,26 @@ export function AdminNotifications() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this admin?')) {
-      return;
-    }
+  const handleDelete = (id: string) => {
+    setAlertDialog({
+      isOpen: true,
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this admin? This action cannot be undone.",
+      type: "warning",
+      showCancel: true,
+      onConfirm: async () => {
+        const { error: deleteError } = await supabase
+          .from('admin_notifications')
+          .delete()
+          .eq('id', id);
 
-    const { error: deleteError } = await supabase
-      .from('admin_notifications')
-      .delete()
-      .eq('id', id);
-
-    if (!deleteError) {
-      setSuccess('Admin deleted successfully');
-      fetchAdmins();
-      setTimeout(() => setSuccess(''), 3000);
-    }
+        if (!deleteError) {
+          setSuccess('Admin deleted successfully');
+          fetchAdmins();
+          setTimeout(() => setSuccess(''), 3000);
+        }
+      },
+    });
   };
 
   if (loading) {
@@ -308,6 +328,16 @@ export function AdminNotifications() {
           </Button>
         </div>
       )}
+
+      <AlertDialog
+        isOpen={alertDialog.isOpen}
+        onClose={() => setAlertDialog({ ...alertDialog, isOpen: false })}
+        onConfirm={alertDialog.onConfirm}
+        title={alertDialog.title}
+        message={alertDialog.message}
+        type={alertDialog.type}
+        showCancel={alertDialog.showCancel}
+      />
       </div>
     </AdminLayout>
   );

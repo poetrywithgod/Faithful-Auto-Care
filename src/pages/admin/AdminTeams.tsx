@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AlertDialog } from "@/components/ui/dialog";
 import { Search, Filter, MoreVertical, Plus, Edit, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -42,6 +43,20 @@ export const AdminTeams = () => {
     status: "active"
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alertDialog, setAlertDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "info" | "error" | "warning" | "success";
+    showCancel: boolean;
+    onConfirm?: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+    showCancel: false,
+  });
 
   useEffect(() => {
     fetchTeamMembers();
@@ -169,27 +184,46 @@ export const AdminTeams = () => {
       fetchTeamMembers();
     } catch (error) {
       console.error("Error saving team member:", error);
-      alert("Failed to save team member. Please try again.");
+      setAlertDialog({
+        isOpen: true,
+        title: "Error",
+        message: "Failed to save team member. Please try again.",
+        type: "error",
+        showCancel: false,
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this team member?")) return;
+  const handleDelete = (id: string) => {
+    setAlertDialog({
+      isOpen: true,
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this team member? This action cannot be undone.",
+      type: "warning",
+      showCancel: true,
+      onConfirm: async () => {
+        try {
+          const { error } = await supabase
+            .from("team_members")
+            .delete()
+            .eq("id", id);
 
-    try {
-      const { error } = await supabase
-        .from("team_members")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-      fetchTeamMembers();
-    } catch (error) {
-      console.error("Error deleting team member:", error);
-      alert("Failed to delete team member. Please try again.");
-    }
+          if (error) throw error;
+          fetchTeamMembers();
+        } catch (error) {
+          console.error("Error deleting team member:", error);
+          setAlertDialog({
+            isOpen: true,
+            title: "Error",
+            message: "Failed to delete team member. Please try again.",
+            type: "error",
+            showCancel: false,
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -473,6 +507,16 @@ export const AdminTeams = () => {
             </div>
           </div>
         )}
+
+        <AlertDialog
+          isOpen={alertDialog.isOpen}
+          onClose={() => setAlertDialog({ ...alertDialog, isOpen: false })}
+          onConfirm={alertDialog.onConfirm}
+          title={alertDialog.title}
+          message={alertDialog.message}
+          type={alertDialog.type}
+          showCancel={alertDialog.showCancel}
+        />
       </div>
     </AdminLayout>
   );
