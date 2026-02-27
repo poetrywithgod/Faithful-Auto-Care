@@ -21,6 +21,13 @@ import { AdminTeams } from "./pages/admin/AdminTeams";
 import { AdminTimeSlot } from "./pages/admin/AdminTimeSlot";
 import { AdminNotifications } from "./pages/admin/AdminNotifications";
 import { AdminNotificationsList } from "./pages/admin/AdminNotificationsList";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminSignIn from "./pages/admin/auth/AdminSignIn";
+import AdminSignUp from "./pages/admin/auth/AdminSignUp";
+import AdminForgotPassword from "./pages/admin/auth/AdminForgotPassword";
+import AdminResetPassword from "./pages/admin/auth/AdminResetPassword";
+import { AdminAuthProvider } from "./contexts/AdminAuthContext";
+import ProtectedRoute from "./components/admin/ProtectedRoute";
 
 function HomePage() {
   return (
@@ -42,20 +49,30 @@ function HomePage() {
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/book-now" element={<BookingPage />} />
-      <Route path="/view-bookings" element={<ViewBookingsPage />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/bookings" element={<AdminBookings />} />
-      <Route path="/admin/timeslot" element={<AdminTimeSlot />} />
-      <Route path="/admin/customers" element={<AdminCustomers />} />
-      <Route path="/admin/services" element={<AdminServices />} />
-      <Route path="/admin/reviews" element={<AdminReviews />} />
-      <Route path="/admin/teams" element={<AdminTeams />} />
-      <Route path="/admin/notifications" element={<AdminNotificationsList />} />
-      <Route path="/admin/notifications/settings" element={<AdminNotifications />} />
-    </Routes>
+    <AdminAuthProvider>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/book-now" element={<BookingPage />} />
+        <Route path="/view-bookings" element={<ViewBookingsPage />} />
+
+        <Route path="/admin/signin" element={<AdminSignIn />} />
+        <Route path="/admin/signup" element={<AdminSignUp />} />
+        <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
+        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
+
+        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/bookings" element={<ProtectedRoute><AdminBookings /></ProtectedRoute>} />
+        <Route path="/admin/timeslot" element={<ProtectedRoute><AdminTimeSlot /></ProtectedRoute>} />
+        <Route path="/admin/customers" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
+        <Route path="/admin/services" element={<ProtectedRoute><AdminServices /></ProtectedRoute>} />
+        <Route path="/admin/reviews" element={<ProtectedRoute><AdminReviews /></ProtectedRoute>} />
+        <Route path="/admin/teams" element={<ProtectedRoute><AdminTeams /></ProtectedRoute>} />
+        <Route path="/admin/notifications" element={<ProtectedRoute><AdminNotificationsList /></ProtectedRoute>} />
+        <Route path="/admin/notifications/settings" element={<ProtectedRoute><AdminNotifications /></ProtectedRoute>} />
+        <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+      </Routes>
+    </AdminAuthProvider>
   );
 }
 
