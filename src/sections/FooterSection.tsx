@@ -29,9 +29,9 @@ export const FooterSection = () => {
           <div className="flex flex-col gap-6 sm:gap-8">
             <div className="flex items-center gap-3 sm:gap-4">
               <img
-                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-full"
-                alt="Faithful Auto Care Logo"
                 src="/logo.png"
+                alt="Faithful Auto Care Logo"
+                className="w-auto h-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain"
               />
               <h2 className="font-poppins font-bold text-white text-lg sm:text-2xl md:text-3xl">
                 FAITHFUL AUTO CARE
