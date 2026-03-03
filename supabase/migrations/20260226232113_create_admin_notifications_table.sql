@@ -38,5 +38,5 @@ CREATE POLICY "Anyone can read active admins"
 
 INSERT INTO admin_notifications (name, email, receive_new_bookings, is_active)
 VALUES 
-  ('Admin Manager', 'admin@faithfulautocare.com', true, true)
+  ('Admin Manager', 'adelekem600@gmail.com', true, true)
 ON CONFLICT (email) DO NOTHING;
