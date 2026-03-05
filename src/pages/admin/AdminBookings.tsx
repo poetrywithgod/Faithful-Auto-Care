@@ -3,7 +3,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, MoreVertical } from "lucide-react";
+import { Search, Filter, MoveVertical as MoreVertical } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface Booking {

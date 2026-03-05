@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertDialog } from "@/components/ui/dialog";
-import { Search, Filter, MoreVertical, Plus, Edit, Trash2, X } from "lucide-react";
+import { Search, Filter, MoveVertical as MoreVertical, Plus, CreditCard as Edit, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface TeamMember {

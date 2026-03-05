@@ -4,7 +4,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Calendar, Euro, Users, TrendingUp, AlertTriangle, Clock, CheckCircle, AlertCircle, Star, Phone, X } from "lucide-react";
+import { Calendar, Euro, Users, TrendingUp, TriangleAlert as AlertTriangle, Clock, CircleCheck as CheckCircle, CircleAlert as AlertCircle, Star, Phone, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 interface Stats {
