@@ -15,7 +15,7 @@ export const FAQSection = () => {
     {
       question: "How long does a car wash take?",
       answer:
-        "Each service package has a time aloted to it, please refer to our pricing.",
+        "A basic wash typically takes 15-20 minutes, while our premium detailing service can take 2-3 hours depending on your vehicle's condition and size. We always prioritize quality over speed.",
     },
     {
       question: "Do you use eco-friendly products?",
@@ -30,7 +30,7 @@ export const FAQSection = () => {
     {
       question: "Do you offer mobile car wash services?",
       answer:
-        "Yes, our car wash serices are fully mobile.",
+        "Yes, we offer mobile car wash services for your convenience. Our team can come to your location with all necessary equipment. Additional charges may apply depending on distance.",
     },
   ];
 

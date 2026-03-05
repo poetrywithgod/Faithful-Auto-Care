@@ -29,7 +29,7 @@ export const HeroSection = () => {
           <div className="flex h-16 sm:h-14 items-center justify-between rounded-full bg-[#D6EAF84D] backdrop-blur-md px-4 sm:px-6 shadow-lg">
             <div className="flex items-center gap-2 sm:gap-3">
               <img
-                src="./utilities/Images/LogoBlackie.png"
+                src="/logo.png"
                 alt="Faithful Auto Care Logo"
                 className="h-8 sm:h-10 w-auto"
               />
@@ -171,7 +171,7 @@ export const HeroSection = () => {
         className="relative flex min-h-screen w-full items-center overflow-hidden"
       >
         <img
-          src="./utilities/Images/LandingPage1.png"
+          src="/washing.jpg"
           alt="Car wash background"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -180,7 +180,7 @@ export const HeroSection = () => {
 
         <div className="container mx-auto px-6 relative z-10 py-32">
           <div className="max-w-2xl text-white">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg opacity-0 animate-slideInLeft">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 drop-shadow-lg opacity-0 animate-slideInLeft">
               <span className="block">Professional shine.</span>
               <span className="block mt-3">Exceptional care.</span>
             </h1>

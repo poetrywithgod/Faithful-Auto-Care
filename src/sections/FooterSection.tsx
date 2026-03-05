@@ -5,17 +5,19 @@ import { Separator } from "@/components/ui/separator";
 
 export const FooterSection = () => {
   const contactInfo = [
-  {
-    icon: Phone,
-    text: "0747 350 2794",
-    href: "tel:07473502794",
-  },
-  {
-    icon: Mail,
-    text: "faithfulautocare@gmail.com",
-    href: "mailto:faithfulautocare@gmail.com",
-  },
-];
+    {
+      icon: Phone,
+      text: "+44 20 7946 0958",
+    },
+    {
+      icon: MapPin,
+      text: "27 Kensington High Street, London W8 5NP, United Kingdom",
+    },
+    {
+      icon: Mail,
+      text: "info@faithfulautocare.co.uk",
+    },
+  ];
 
   const companyLinks = ["About", "Company", "Blog", "Employee Handbook"];
   const legalLinks = ["Terms of service", "Privacy Policy", "Cookies Policy"];
@@ -27,9 +29,9 @@ export const FooterSection = () => {
           <div className="flex flex-col gap-6 sm:gap-8">
             <div className="flex items-center gap-3 sm:gap-4">
               <img
-                src="/logo.png"
+                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-full"
                 alt="Faithful Auto Care Logo"
-                className="w-auto h-auto max-w-[120px] sm:max-w-[150px] md:max-w-[180px] object-contain"
+                src="/logo.png"
               />
               <h2 className="font-poppins font-bold text-white text-lg sm:text-2xl md:text-3xl">
                 FAITHFUL AUTO CARE
@@ -44,20 +46,13 @@ export const FooterSection = () => {
 
             <div className="flex flex-col gap-4 sm:gap-5">
               {contactInfo.map((contact, index) => (
-                <div
-                  key={index}
-                  className="flex items-start sm:items-center gap-3 sm:gap-4"
-                >
+                <div key={index} className="flex items-start sm:items-center gap-3 sm:gap-4">
                   <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
                     <contact.icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-
-                  <a
-                    href={contact.href}
-                    className="font-poppins text-white text-xs sm:text-sm hover:underline"
-                  >
+                  <p className="font-poppins text-white text-xs sm:text-sm">
                     {contact.text}
-                  </a>
+                  </p>
                 </div>
               ))}
             </div>
@@ -128,4 +123,3 @@ export const FooterSection = () => {
     </footer>
   );
 };
-
