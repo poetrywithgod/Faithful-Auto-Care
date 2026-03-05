@@ -234,7 +234,7 @@ export const AdminServices = () => {
           </Card>
           <Card className="p-4 md:p-6 text-center">
             <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-            <p className="mt-2 text-3xl md:text-4xl font-bold text-gray-900">€{stats.revenue}</p>
+            <p className="mt-2 text-3xl md:text-4xl font-bold text-gray-900">£{stats.revenue}</p>
           </Card>
         </div>
 
@@ -261,7 +261,7 @@ export const AdminServices = () => {
                 </div>
 
                 <div className="mt-4 flex items-center gap-4">
-                  <p className="text-2xl font-bold text-gray-900">€{service.price}</p>
+                  <p className="text-2xl font-bold text-gray-900">£{service.price}</p>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <Clock className="h-4 w-4" />
                     <span>{service.duration} min</span>
@@ -338,7 +338,7 @@ export const AdminServices = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Price (€)</label>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Price (£)</label>
                 <Input
                   type="number"
                   placeholder="0"

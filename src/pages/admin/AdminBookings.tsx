@@ -158,7 +158,7 @@ export const AdminBookings = () => {
                       {booking.vehicle_type}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                      €{booking.service_price}
+                      £{booking.service_price}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <span

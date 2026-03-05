@@ -317,7 +317,7 @@ export const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Revenue</p>
-                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">€{stats.revenue.toLocaleString()}</p>
+                <p className="mt-2 text-2xl sm:text-3xl font-bold text-gray-900">£{stats.revenue.toLocaleString()}</p>
                 <p className={`mt-1 text-xs sm:text-sm ${stats.revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {stats.revenueGrowth >= 0 ? '+' : ''}{stats.revenueGrowth}% vs previous period
                 </p>

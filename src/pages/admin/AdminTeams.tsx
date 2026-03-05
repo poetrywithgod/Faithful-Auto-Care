@@ -387,7 +387,7 @@ export const AdminTeams = () => {
                     </h3>
                     <p className="text-sm text-gray-600">{performer.bookings} Bookings</p>
                   </div>
-                  <p className="text-2xl font-bold text-blue-600">€{performer.revenue}</p>
+                  <p className="text-2xl font-bold text-blue-600">£{performer.revenue}</p>
                 </div>
               </Card>
             ))}

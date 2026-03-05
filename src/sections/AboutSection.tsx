@@ -40,15 +40,11 @@ export const AboutSection = () => {
           </div>
 
           <div ref={contentRef} className={`w-full md:w-1/2 transition-all duration-700 delay-300 ${contentVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
-            <h2 className="text-gray-800 text-2xl sm:text-3xl md:text-4xl font-semibold mb-4">
+            <h2 className="text-gray-800 text-2xl  md:text-4xl font-semibold mb-4">
               Professional Car Care You Can Trust
             </h2>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              We provide expert car washing and detailing services designed to
-              keep your vehicle spotless, protected, and refreshed. From quick
-              washes to full detailing, our team uses premium products and
-              eco-friendly techniques to ensure every car gets thorough care,
-              lasting shine, and a smooth, hassle-free experience.
+              At Faithful Auto Care, we bring the luxury of professional car detailing straight to you. We don’t only wash we care. Our mobile service is all about convenience: we come to your home, office, or any location you choose, offering a complete, on-the-go wash and detailing service at your convenience. From a quick exterior shine to a full interior deep clean, every step is done with precision. We value your time, so we come to you no hassle, no waiting, just top-quality care wherever you are. At Faithful Auto Care, your car is in trusted hands because we don’t only wash, we care.
             </p>
             <Button
               onClick={() => navigate('/book-now')}
