@@ -66,7 +66,7 @@ export const PricingSection = () => {
                         {service.name}
                       </h3>
                       <p className="font-poppins font-bold text-[#020a1f] text-2xl">
-                        £{service.price}
+                        from £{service.price}
                       </p>
                     </div>
                   </CardHeader>

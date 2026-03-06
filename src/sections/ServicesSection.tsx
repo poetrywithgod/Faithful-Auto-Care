@@ -7,23 +7,23 @@ export const ServicesSection = () => {
   const services = [
     {
       icon: Droplets,
-      title: "Tyre & Rim Care",
+      title: "Basic Refresh Package",
       description:
-        "We remove dirt, brake dust, and grime while applying premium treatments to restore shine and protect surfaces.",
+        "A quick, focused clean — interior OR exterior. We vacuum, wipe the dashboard, console and doors, or wash, rinse and polish the exterior including windows and alloy wheels. From £35.",
       image: "https://images.pexels.com/photos/13065690/pexels-photo-13065690.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
     {
       icon: Car,
-      title: "Engine Bay Care",
+      title: "Premium Package",
       description:
-        "We carefully remove grease, dirt, and grime using specialized tools and eco-friendly degreasers, ensuring no damage",
+        "Our most popular full interior and exterior valet. Seat shampooing, window cleaning, dashboard wipe, exterior wash, shampoo, polish and alloy wheel cleaning. From £70.",
       image: "https://images.pexels.com/photos/4488662/pexels-photo-4488662.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
     {
       icon: Trash2,
-      title: "Cabin Deep Clean",
+      title: "Ultimate Package",
       description:
-        "We carefully vacuum carpets, seats, and floor mats, wipe dashboards, and clean vents to remove dirt, and allergens",
+        "Our most comprehensive deep clean to return your vehicle to showroom standard. Includes everything in Premium plus deep seat cleaning, stain remover treatment and more. From £155.",
       image: "https://images.pexels.com/photos/5247965/pexels-photo-5247965.jpeg?auto=compress&cs=tinysrgb&w=600",
     },
   ];
