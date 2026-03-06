@@ -186,7 +186,7 @@ export function DetailsStep({
           </label>
           <Input
             type="email"
-            placeholder="Alex Jon"
+            placeholder="alex@example.com"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -203,11 +203,13 @@ export function DetailsStep({
           </label>
           <Input
             type="tel"
-            placeholder="+70 343-521-34"
+            inputMode="numeric"
+            placeholder="07123 456789"
             value={phone}
             onChange={(e) => {
-              setPhone(e.target.value);
-              onDetailsChange({ customerPhone: e.target.value });
+              const val = e.target.value.replace(/[^0-9+\s()-]/g, '');
+              setPhone(val);
+              onDetailsChange({ customerPhone: val });
             }}
             className="h-12"
           />
