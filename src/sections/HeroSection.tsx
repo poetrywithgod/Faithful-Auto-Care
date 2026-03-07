@@ -81,27 +81,52 @@ export const HeroSection = () => {
             </ul>
 
             <div className="flex items-center gap-2 sm:gap-3">
+
+            {/* WhatsApp Chat */}
+            <a
+              href="https://wa.me/447473052794"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button className="hidden sm:flex rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-                <MessageCircle className="w-4 h-4" /> Chat us
+                <MessageCircle className="w-4 h-4 mr-1" />
+                Chat us
               </Button>
+            </a>
+
+            {/* Phone Call */}
+            <a href="tel:+447473052794">
               <Button className="hidden sm:flex rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600">
-                <Phone className="w-4 h-4" /> Call
+                <Phone className="w-4 h-4 mr-1" />
+                Call
               </Button>
+            </a>
 
-              <Button
-                className="sm:hidden rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </Button>
+            {/* Mobile Menu Button */}
+            <Button
+              className="sm:hidden rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </Button>
 
-              <Button
-                className="hidden lg:hidden md:flex rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </Button>
-            </div>
+            {/* Tablet Menu Button */}
+            <Button
+              className="hidden md:flex lg:hidden rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </Button>
+
+          </div>
           </div>
         </div>
 
